@@ -7,6 +7,7 @@ mongoose.Promise = global.Promise;
 
 const TeamSchema = mongoose.Schema({
     id : String,
+	shield: String,
     name :String,
     colors : String,
     stadium : String,
