@@ -1,0 +1,23 @@
+{
+  "name": "tftnode",
+  "version": "1.0.0",
+  "description": "proyecto node trabajo TFT",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dsbrio/fullstackTFT_API.git"
+  },
+  "author": "David Sánchez, Carlos Pérez, Lucas Martín",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dsbrio/fullstackTFT_API/issues"
+  },
+  "homepage": "https://github.com/dsbrio/fullstackTFT_API#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongoose": "^5.1.2"
+  }
+}
