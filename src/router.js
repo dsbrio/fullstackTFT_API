@@ -6,8 +6,10 @@ const addTeamProcessUrl = './src/process/team/addTeamProcess.js';
 const updateTeamProcessUrl = './src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = './src/process/team/deleteTeamProcess.js';
 
+const teamModel = './model/TeamModel.js';
+
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {getTeams, getTeamById, deleteTeam, deleteAll} = require('../src/model/TeamModel.js');
+const {getTeams, getTeamById, deleteTeam, deleteAll} = require(teamModel);
 
 const router = express.Router();
 
