@@ -6,14 +6,14 @@ const addTeamProcessUrl = './src/process/team/addTeamProcess.js';
 const updateTeamProcessUrl = './src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = './src/process/team/deleteTeamProcess.js';
 
-const {login, generaToken} = require('./utileria/login.js');
+const {login, generaToken, validarToken} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
 const {getTeams, getTeamById, deleteTeam, deleteAll} = require('./model/TeamModel.js');
 
 const router = express.Router();
 
-//Endpoint para login de usuario en la aplicación
+//Endpoint para login de usuario en la aplicación, con admin / admin podeis entrar.
 router.post('/login', (req, res) => {
 
     //obtenemos los parametros de la petición
@@ -32,9 +32,7 @@ router.post('/login', (req, res) => {
                     "user" : userInfo, 
                     "token" : token
                 }
-
                 res.status(201).json(data);
-
             });
 
         }else{
@@ -74,17 +72,28 @@ router.post('/team',(req,res)=>{
 //listado de equipo sin proceso hijo
 router.get('/teams', (req, res)=>{
 
-    //obtenemos los resultados.
-    getTeams().then((data)=>{
-        console.log('Lista de equipos obtenida.');
+    validarToken(req.headers['authorization'], function(tokenValido){
 
-        res.status(200).json(data);
+        if(tokenValido){
 
-    }).catch((err) => {
-        console.log('Error obteniendo lista de equipos');
-        console.log(err);
-        res.status(500).json({success:false});
+            //obtenemos los resultados.
+            getTeams().then((listaEquipos)=>{
+                
+                res.status(200).json({success:true, data:listaEquipos});
+
+            }).catch((err) => {
+                console.log('Error obteniendo lista de equipos');
+                console.log(err);
+                res.status(500).json({success:false});
+            });
+
+        }else{
+            //token no valido, 401
+            res.status(401).json({success:false, message:"No autorizado."});
+        }
     });
+
+    
 });
 
 //busqueda de equipo por id sin proceso hijo

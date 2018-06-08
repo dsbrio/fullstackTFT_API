@@ -3,9 +3,7 @@
 const mongoose = require('mongoose');
 
 //conectamos con nuestra base de datos
-mongodb://<dbteam>:<dbpassword>@ds016118.mlab.com:16118/tft
-//mongoose.connect('mongodb://ds016118.mlab.com:16118/tft');
-mongoose.connect('mongodb://tft:tft@ds016118.mlab.com:16118/tft');
+mongodb:mongoose.connect('mongodb://tft:tft@ds016118.mlab.com:16118/tft');
 mongoose.Promise = global.Promise;
 
 //Indicamos el esquema de usuario
@@ -31,8 +29,8 @@ exports.getUserByUsernamePassword = (u, p) => {
 
 //actualizamos el token del usuario cuando hace login.
 exports.updateToken = (userInfo, token) => { 
-
-    let jsonBusqueda= {_id:userInfo._id};
+    
+    let jsonBusqueda= {_id:userInfo.id};
 
     var newvalues ={$set: {token: token} };
 
@@ -41,10 +39,10 @@ exports.updateToken = (userInfo, token) => {
 };
 
 
-//Busca el usuario por token.
-exports.getUserByToken = (token) => {
+//Busca el usuario por id.
+exports.getUserById = (id) => {
   
-    let jsonBusqueda= {token:token};
+    let jsonBusqueda= {_id:id};
     return User.find(jsonBusqueda).exec();
 };
 

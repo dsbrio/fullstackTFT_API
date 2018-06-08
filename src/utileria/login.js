@@ -8,7 +8,7 @@ var jwt = require('jsonwebtoken');
 var secretKey ='CarlosDavidLucasCDL';
 
 //Importamos el modelo de usuario.
-const {getUserByUsernamePassword, updateToken, getUserByToken} = require('.././model/userModel.js');
+const {getUserByUsernamePassword, updateToken, getUserById} = require('.././model/userModel.js');
 
 //Funcion que valida si un usuario es valido.
 exports.login = (username, password, callback) => {
@@ -51,13 +51,12 @@ exports.generaToken = (userInfo, callback) => {
     
     //Añadimos la información que sea necesaria para crear el token
     var tokenData = {
-        username: userInfo.username,
-        id:userInfo._id,
+        user:userInfo        
     };
 
     //usamos la libreria para generar el token junto con la clave secreta.
     var token = jwt.sign(tokenData, secretKey, {
-         expiresIn: 60// * 60 * 24 // expires in 24 hours
+         expiresIn: 60 * 60 * 24 // expires in 24 hours
     })
 
     //almacenamos el token en la tabla de usuario para que se pueda consultar su validez en cada petición
@@ -73,13 +72,13 @@ exports.generaToken = (userInfo, callback) => {
     callback(token);
 }
 
-//Funcion que valida un token
+//Funcion que valida un token comparandolo con el de base de datos.
+//Para ello, busca con el id de usuario que viene en el token si existe en base de datos y además si los token coinciden.
+//si no coinciden, no será valido, por tanto no pasará.
 exports.validarToken = (token, callback) => {
 
-    var respuesta = false;
-	
 	if(!token){       
-        respuesta =  false;
+        callback(false);
     }
 	
 	//se elimina, segun el tutorial xq lo añade por defecto http
@@ -90,32 +89,25 @@ exports.validarToken = (token, callback) => {
         if (err) {
             console.log('token invalido');
             console.log(err);
-          respuesta =  false;
+            callback(false);
+
         } else {
-            console.log('token valido');
-            console.log('tokenData',tokenData);             
-            
-
+           
             //buscamos en base de datos a ver si existe usuario para ese token
-            getUserByToken(token).then((data) => {
+            getUserById(tokenData.user.id).then((data) => {
 
-                if(null!=data && undefined!=data && data.length ==1){
+                if(null!=data && undefined!=data && data.length ==1
+                && token==data[0].token){
                     //existe un usuario con ese token.
-                    var userInfo = data[0];
-
-
-                    console.log('userInfo',userInfo);
-                    
+                   callback(true);
                 }
-
 
             }).catch((err) => {
                 console.log('Error buscando token');
                 console.log(err);
+                callback(false);
             });
         }
       });
-		 
-	 callback(respuesta);
 
 }
