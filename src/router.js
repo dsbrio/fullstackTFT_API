@@ -6,10 +6,44 @@ const addTeamProcessUrl = './src/process/team/addTeamProcess.js';
 const updateTeamProcessUrl = './src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = './src/process/team/deleteTeamProcess.js';
 
+const {login} = require('./utileria/login.js');
+
 //importamos solo las funciones del modelo que vamos a usar desde el router.
 const {getTeams, getTeamById, deleteTeam, deleteAll} = require('./model/TeamModel.js');
 
 const router = express.Router();
+
+
+router.post('/login', (req, res) => {
+
+    //obtenemos los parametros de la petición
+    var username = req.body.username;
+    var password = req.body.password;
+
+    console.log(username);
+    console.log(password);
+
+    login(username, password, function(loginOk){
+		
+        if(loginOk){
+            console.log('Login correcto, generando token...');
+            
+            res.status(200).json(loginOk);
+
+        }else{
+    
+            res.status(401).send({
+                error: 'usuario o contraseña inválidos'
+            })
+        }
+
+		
+		
+	});
+
+    
+
+});
 
 //creación del equipo con proceso hijo.
 router.post('/team',(req,res)=>{
