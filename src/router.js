@@ -6,10 +6,43 @@ const addTeamProcessUrl = './src/process/team/addTeamProcess.js';
 const updateTeamProcessUrl = './src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = './src/process/team/deleteTeamProcess.js';
 
+const {login, generaToken, validarToken} = require('./utileria/login.js');
+
 //importamos solo las funciones del modelo que vamos a usar desde el router.
 const {getTeams, getTeamById, deleteTeam, deleteAll} = require('./model/TeamModel.js');
 
 const router = express.Router();
+
+//Endpoint para login de usuario en la aplicación, con admin / admin podeis entrar.
+router.post('/login', (req, res) => {
+
+    //obtenemos los parametros de la petición
+    var username = req.body.username;
+    var password = req.body.password;
+
+    login(username, password, function(loginOk, userInfo){
+		
+        if(loginOk){
+           
+            //llamamos a la funcion de generar token
+            generaToken(userInfo, function(token){
+
+                //respondemos con el token generado y datos de usuario.
+                var data = {
+                    "user" : userInfo, 
+                    "token" : token
+                }
+                res.status(201).json(data);
+            });
+
+        }else{
+    
+            res.status(401).send({
+                error: 'usuario o contraseña inválidos'
+            })
+        }		
+	});
+});
 
 //creación del equipo con proceso hijo.
 router.post('/team',(req,res)=>{
@@ -39,17 +72,28 @@ router.post('/team',(req,res)=>{
 //listado de equipo sin proceso hijo
 router.get('/teams', (req, res)=>{
 
-    //obtenemos los resultados.
-    getTeams().then((data)=>{
-        console.log('Lista de equipos obtenida.');
+    validarToken(req.headers['authorization'], function(tokenValido){
 
-        res.status(200).json(data);
+        if(tokenValido){
 
-    }).catch((err) => {
-        console.log('Error obteniendo lista de equipos');
-        console.log(err);
-        res.status(500).json({success:false});
+            //obtenemos los resultados.
+            getTeams().then((listaEquipos)=>{
+                
+                res.status(200).json({success:true, data:listaEquipos});
+
+            }).catch((err) => {
+                console.log('Error obteniendo lista de equipos');
+                console.log(err);
+                res.status(500).json({success:false});
+            });
+
+        }else{
+            //token no valido, 401
+            res.status(401).json({success:false, message:"No autorizado."});
+        }
     });
+
+    
 });
 
 //busqueda de equipo por id sin proceso hijo
