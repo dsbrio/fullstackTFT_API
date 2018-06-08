@@ -1,15 +1,23 @@
 
 const express = require('express');
 const { fork } = require('child_process');
+var cloudinary = require('cloudinary');
 
-const addTeamProcessUrl = './src/process/team/addTeamProcess.js';
-const updateTeamProcessUrl = './src/process/team/updateTeamProcess.js';
-const deleteTeamProcessUrl = './src/process/team/deleteTeamProcess.js';
+const addTeamProcessUrl = 'src/process/team/addTeamProcess.js';
+const updateTeamProcessUrl = 'src/process/team/updateTeamProcess.js';
+const deleteTeamProcessUrl = 'src/process/team/deleteTeamProcess.js';
+
+
+cloudinary.config({ 
+    cloud_name: 'tftfullstack', 
+    api_key: '825618299169144', 
+    api_secret: 'h0eeOMCpOo7BegNlq_8mpvmeSuQ' 
+  });
 
 const {login, generaToken, validarToken} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {getTeams, getTeamById, deleteTeam, deleteAll} = require('./model/TeamModel.js');
+const {getTeams, getTeamById, deleteTeam, deleteAll} = require('./model/teamModel.js');
 
 const router = express.Router();
 
@@ -46,6 +54,14 @@ router.post('/login', (req, res) => {
 
 //creación del equipo con proceso hijo.
 router.post('/team',(req,res)=>{
+    /*cloudinary.uploader.upload("asdf.png", function(result) { 
+        console.log(result) 
+      });*/
+
+      console.log(req.body.shield);
+
+      cloudinary.v2.uploader.upload("data:image/png;base64,"+ req.body.shield, 
+        function(error, result) {console.log(result); });
     
     //obtenemos el campo body de la petición
     let data = req.body;
@@ -68,6 +84,9 @@ router.post('/team',(req,res)=>{
     addTeamProcess.send(data);
    
 });
+
+
+
 
 //listado de equipo sin proceso hijo
 router.get('/teams', (req, res)=>{
