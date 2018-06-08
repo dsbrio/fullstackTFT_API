@@ -6,7 +6,7 @@ const addTeamProcessUrl = './src/process/team/addTeamProcess.js';
 const updateTeamProcessUrl = './src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = './src/process/team/deleteTeamProcess.js';
 
-const {login} = require('./utileria/login.js');
+const {login, generaToken} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
 const {getTeams, getTeamById, deleteTeam, deleteAll} = require('./model/TeamModel.js');
@@ -27,22 +27,27 @@ router.post('/login', (req, res) => {
 		
         if(loginOk){
             console.log('Login correcto, generando token...');
-            
-            res.status(200).json(loginOk);
+
+            //llamamos a la funcion de generar token
+            generaToken(username, password, function(token){
+
+                //respondemos con el token generado y datos de usuario.
+                var data = {
+                    "nombre" :"Nombre de usuario", 
+                    "token" : token
+                }
+
+                res.status(201).json(data);
+
+            });
 
         }else{
     
             res.status(401).send({
                 error: 'usuario o contraseña inválidos'
             })
-        }
-
-		
-		
+        }		
 	});
-
-    
-
 });
 
 //creación del equipo con proceso hijo.

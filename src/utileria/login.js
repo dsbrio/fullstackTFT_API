@@ -9,9 +9,6 @@ var secretKey ='CarlosDavidLucasCDL';
 //Funcion que valida si un usuario es valido.
 exports.login = (username, password, callback) => {
 
-    console.log(username);
-    console.log(password);
-
     var loginValido = true;
 
     //Si alguno de los parametros no esta correctamente informado, retornamos false
@@ -34,10 +31,20 @@ exports.login = (username, password, callback) => {
 
 
 //Funcion que genera un token
-exports.generaToken = (token) => {
+exports.generaToken = (username, password, callback) => {
+    
+    //Añadimos la información que sea necesaria para crear el token
+    var tokenData = {
+        username: username
+    };
+     
+    //usamos la libreria para generar el token junto con la clave secreta.
+    var token = jwt.sign(tokenData, secretKey, {
+         expiresIn: 60 * 60 * 24 // expires in 24 hours
+    })
 
-
-
+    //retornamos el token.
+    callback(token);
 }
 
 //Funcion que valida un token
