@@ -13,27 +13,23 @@ const {getTeams, getTeamById, deleteTeam, deleteAll} = require('./model/TeamMode
 
 const router = express.Router();
 
-
+//Endpoint para login de usuario en la aplicación
 router.post('/login', (req, res) => {
 
     //obtenemos los parametros de la petición
     var username = req.body.username;
     var password = req.body.password;
 
-    console.log(username);
-    console.log(password);
-
-    login(username, password, function(loginOk){
+    login(username, password, function(loginOk, userInfo){
 		
         if(loginOk){
-            console.log('Login correcto, generando token...');
-
+           
             //llamamos a la funcion de generar token
-            generaToken(username, password, function(token){
+            generaToken(userInfo, function(token){
 
                 //respondemos con el token generado y datos de usuario.
                 var data = {
-                    "nombre" :"Nombre de usuario", 
+                    "user" : userInfo, 
                     "token" : token
                 }
 
