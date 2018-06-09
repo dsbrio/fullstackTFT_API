@@ -9,22 +9,15 @@ mongoose.Promise = global.Promise;
 
 const TeamSchema = mongoose.Schema({
     id : String,
-	shield: String,
     name :String,
-    colors : String,
+	shield: String,
     stadium : String,
-    players: [{
-        name: String,
-		secondname: String,
-		age: Number,
-		position: String,
-        characteristics: {
-            attack: String,
-            defense: String,
-			condition: String
-        },
-		comments: String
-    }]
+    history: {
+        goals: Number,
+		titles: Number
+    },
+    coach: String,
+    president: String
 });
 
 
@@ -59,10 +52,7 @@ exports.updateTeam = (data) =>{
 
     let jsonBusqueda= {_id:data.id};
 
-    var newvalues ={$set: {name: data.name, colors: data.colors, stadium:data.stadium } };
-
-    return Team.findOneAndUpdate(jsonBusqueda,newvalues);
-   
+    var newvalues ={$set: {name: data.name, shield: data.shield, stadium:data.stadium } };   
 };
 
 //Borrado de un equipo por id.

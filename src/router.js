@@ -9,7 +9,10 @@ const deleteTeamProcessUrl = 'src/process/team/deleteTeamProcess.js';
 const {login, generaToken, validarToken} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {getTeams, getTeamById, deleteTeam, deleteAll} = require('./model/teamModel.js');
+const {getTeams, getTeamById, deleteAll} = require('./model/teamModel.js');
+
+//importamos solo las funciones del modelo que vamos a usar desde el router.
+const {savePlayer, getPlayerById} = require('./model/playerModel.js');
 
 const router = express.Router();
 
@@ -45,7 +48,7 @@ router.post('/login', (req, res) => {
 });
 
 //creación del equipo con proceso hijo.
-router.post('/team',(req,res)=>{
+router.post('/teams',(req,res)=>{
 
     validarToken(req.headers['authorization'], function(tokenValido){
 
@@ -77,8 +80,6 @@ router.post('/team',(req,res)=>{
         }
     });
 
-    
-   
 });
 
 
@@ -191,6 +192,52 @@ router.delete('/teams', (req, res)=>{
         res.status(500).json({success:false});
     });   
 });
+
+
+//creación del jugador sin proceso hijo.
+router.post('/players',(req,res)=>{
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+        if(tokenValido){
+
+            let data = req.body;
+            savePlayer(data).then((data)=>{
+                console.log('Jugador creado correctamente')
+                res.status(200).json({data});
+        
+            }).catch((err) => {
+                console.log('Error creando jugador');
+                console.log(err);
+                res.status(500).json({success:false});
+            });   
+
+        }else{
+            //token no valido, 401
+            res.status(401).json({success:false, message:"No autorizado."});
+        }
+    });
+
+});
+
+
+//obtención del jugador sin proceso hijo.
+router.get('/players/:id',(req,res)=>{
+
+    let data = req.body;
+    data.id = req.params.id;
+console.log(data.id);
+    getPlayerById(data.id).then((data)=>{
+        console.log('Jugador obtenido correctamente')
+        res.status(200).json(data);
+
+    }).catch((err) => {
+        console.log('Error obteniendo jugador');
+        console.log(err);
+        res.status(500).json({success:false});
+    });  
+    
+});
+
 
 
 module.exports = router;
