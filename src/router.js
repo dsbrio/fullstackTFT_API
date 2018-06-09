@@ -47,29 +47,39 @@ router.post('/login', (req, res) => {
 //creación del equipo con proceso hijo.
 router.post('/team',(req,res)=>{
 
-    //obtenemos el campo body de la petición
-    let data = req.body;
+    validarToken(req.headers['authorization'], function(tokenValido){
 
-    //Obtenemos el proceso hijo
-    const addTeamProcess = fork(addTeamProcessUrl);
+        if(tokenValido){
 
-    //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
-    addTeamProcess.on('message', (responseBBDD) => {
-        res.status(201).json(responseBBDD);
+            //obtenemos el campo body de la petición
+            let data = req.body;
+
+            //Obtenemos el proceso hijo
+            const addTeamProcess = fork(addTeamProcessUrl);
+
+            //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+            addTeamProcess.on('message', (responseBBDD) => {
+                res.status(201).json(responseBBDD);
+            });
+
+            addTeamProcess.on('exit', () => {
+                //Respondemos con OK
+                res.status(500).json({error:'Error creando equipo.'});
+            
+            });
+
+            //ejecutamos el proceso.
+            addTeamProcess.send(data);
+
+        }else{
+            //token no valido, 401
+            res.status(401).json({success:false, message:"No autorizado."});
+        }
     });
 
-    addTeamProcess.on('exit', () => {
-        //Respondemos con OK
-        res.status(500).json({error:'Error creando equipo.'});
-       
-    });
-
-    //ejecutamos el proceso.
-    addTeamProcess.send(data);
+    
    
 });
-
-
 
 
 //listado de equipo sin proceso hijo
