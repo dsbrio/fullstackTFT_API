@@ -86,28 +86,16 @@ router.post('/teams',(req,res)=>{
 //listado de equipo sin proceso hijo
 router.get('/teams', (req, res)=>{
 
-    validarToken(req.headers['authorization'], function(tokenValido){
+        //obtenemos los resultados.
+        getTeams().then((listaEquipos)=>{
+            
+            res.status(200).json({success:true, data:listaEquipos});
 
-        if(tokenValido){
-
-            //obtenemos los resultados.
-            getTeams().then((listaEquipos)=>{
-                
-                res.status(200).json({success:true, data:listaEquipos});
-
-            }).catch((err) => {
-                console.log('Error obteniendo lista de equipos');
-                console.log(err);
-                res.status(500).json({success:false});
-            });
-
-        }else{
-            //token no valido, 401
-            res.status(401).json({success:false, message:"No autorizado."});
-        }
-    });
-
-    
+        }).catch((err) => {
+            console.log('Error obteniendo lista de equipos');
+            console.log(err);
+            res.status(500).json({success:false});
+        });
 });
 
 //busqueda de equipo por id sin proceso hijo
