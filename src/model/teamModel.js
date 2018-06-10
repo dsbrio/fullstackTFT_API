@@ -52,7 +52,7 @@ exports.updateTeam = (data) =>{
 
     let jsonBusqueda= {_id:data.id};
 
-    var newvalues ={$set: {name: data.name, shield: data.shield, stadium:data.stadium } };   
+    return Team.findOneAndUpdate(jsonBusqueda,data);
 };
 
 //Borrado de un equipo por id.

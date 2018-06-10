@@ -145,7 +145,7 @@ router.patch('/teams/:id', (req, res)=>{
 
     updateTeamProcess.on('exit', () => {
         //Respondemos con OK
-        res.status(500).json({error:'Error actualizando usuario.'});
+        res.status(500).json({error:'Error actualizando equipo.'});
        
     });
 
