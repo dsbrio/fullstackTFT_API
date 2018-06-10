@@ -28,6 +28,13 @@ exports.savePlayer = (data) =>{
     return (new Player(data)).save();
 };
 
+//obtienen el listado de todos los jugadores de la BD.
+exports.getAllPlayers = ()=>{
+    let listPlayers = Player.find().exec();
+
+    return listPlayers;
+};
+
 //obtienen el listado de todos los jugadores pertenecientes a un equipo.
 exports.getPlayersByTeamId = (teamId)=>{
 
