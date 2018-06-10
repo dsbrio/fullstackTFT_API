@@ -12,7 +12,7 @@ const {login, generaToken, validarToken} = require('./utileria/login.js');
 const {getTeams, getTeamById, deleteAll} = require('./model/teamModel.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {savePlayer, getPlayerById} = require('./model/playerModel.js');
+const {savePlayer, getPlayerById, getPlayersByTeamId} = require('./model/playerModel.js');
 
 const router = express.Router();
 
@@ -115,10 +115,21 @@ router.get('/teams/:id', (req, res)=>{
 
     let teamId = req.params.id;
 
-    getTeamById(teamId).then((data)=>{
+    getTeamById(teamId).then((teamData)=>{
         console.log('Equipo obtenido correctamente.');
 
-        res.status(200).json(data);
+        getPlayersByTeamId(teamId).then((playersData)=>{
+
+            var teamDataMod = teamData.toObject();
+            teamDataMod.players = {playersData};
+            
+            res.status(200).json(teamDataMod);
+
+        }).catch((err) => {
+            console.log('Error obteniendo jugadores del equipo');
+            console.log(err);
+            res.status(500).json({success:false});
+        });
 
     }).catch((err) => {
         console.log('Error obteniendo equipo');
@@ -225,7 +236,7 @@ router.get('/players/:id',(req,res)=>{
 
     let data = req.body;
     data.id = req.params.id;
-console.log(data.id);
+    
     getPlayerById(data.id).then((data)=>{
         console.log('Jugador obtenido correctamente')
         res.status(200).json(data);

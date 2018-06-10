@@ -42,7 +42,7 @@ exports.getTeamById = (teamId)=>{
     //formamos el json con el cual realizar la búsqueda.
     let jsonBusqueda= {_id:teamId};
     //obtenemos el listado de equipos por busqueda, en este caso solo saldra uno.
-    let listTeams = Team.find(jsonBusqueda).exec();
+    let listTeams = Team.findOne(jsonBusqueda).exec();
 
     return listTeams;
 };

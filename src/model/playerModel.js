@@ -29,12 +29,12 @@ exports.savePlayer = (data) =>{
 };
 
 //obtienen el listado de todos los jugadores pertenecientes a un equipo.
-exports.getTeamPlayerss = (teamId)=>{
+exports.getPlayersByTeamId = (teamId)=>{
 
     //formamos el json con el cual realizar la búsqueda.
     let jsonBusqueda= {team:teamId};
+    let listPlayers = Player.find(jsonBusqueda).exec();
 
-    let listPlayers = Player.find({jsonBusqueda}).exec();
     return listPlayers;
 };
 
