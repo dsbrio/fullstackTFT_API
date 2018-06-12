@@ -307,9 +307,15 @@ router.get('/players/:id',(req,res)=>{
     
     getPlayerById(data.id).then((data)=>{
 
+        var playerInfo={};
+
+        if(null!=data && data.length==1){
+            playerInfo=data[0];
+        }
+        
         var response = {
             success:true,
-            data:data
+            data:playerInfo
         };
         res.status(200).json(response);
 
