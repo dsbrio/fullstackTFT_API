@@ -65,12 +65,17 @@ router.post('/teams',(req,res)=>{
 
             //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
             addTeamProcess.on('message', (responseBBDD) => {
-                res.status(201).json(responseBBDD);
+
+                var response ={
+                    success:true,
+                    data : responseBBDD
+                };
+                res.status(201).json(response);
             });
 
             addTeamProcess.on('exit', () => {
                 //Respondemos con OK
-                res.status(500).json({error:'Error creando equipo.'});
+                res.status(500).json({ success:false, error:'Error creando equipo.'});
             
             });
 
@@ -113,8 +118,13 @@ router.get('/teams/:id', (req, res)=>{
 
             var teamDataMod = teamData.toObject();
             teamDataMod.players = {playersData};
+
+            var response = {
+                success:true,
+                data:teamDataMod
+            }
             
-            res.status(200).json(teamDataMod);
+            res.status(200).json(response);
 
         }).catch((err) => {
             console.log('Error obteniendo jugadores del equipo');
@@ -143,12 +153,16 @@ router.patch('/teams/:id', (req, res)=>{
     //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
     updateTeamProcess.on('message', (responseUpdateBBDD) => {
         //Respondemos con OK
-         res.status(201).json(responseUpdateBBDD);
+        var response = {
+            success:true,
+            data:responseUpdateBBDD
+        };
+         res.status(201).json(response);
     });
 
     updateTeamProcess.on('exit', () => {
         //Respondemos con OK
-        res.status(500).json({error:'Error actualizando equipo.'});
+        res.status(500).json({success:false,error:'Error actualizando equipo.'});
        
     });
 
@@ -169,12 +183,16 @@ router.delete('/team/:id', (req, res)=>{
     //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
     deleteTeamProcess.on('message', (responseUpdateBBDD) => {
         //Respondemos con OK
-         res.status(201).json(responseUpdateBBDD);
+        var response = {
+            success:true,
+            data:responseUpdateBBDD
+        };
+         res.status(201).json(response);
     });
 
     deleteTeamProcess.on('exit', () => {
         //Respondemos con OK
-        res.status(500).json({error:'Error actualizando usuario.'});
+        res.status(500).json({  success:false,error:'Error actualizando usuario.'});
        
     });
 
@@ -206,7 +224,12 @@ router.post('/players',(req,res)=>{
             let data = req.body;
             savePlayer(data).then((data)=>{
                 console.log('Jugador creado correctamente')
-                res.status(200).json({data});
+                var response = {
+                    success:true,
+                    data : data
+                };
+
+                res.status(200).json(response);
         
             }).catch((err) => {
                 console.log('Error creando jugador');
@@ -227,8 +250,12 @@ router.post('/players',(req,res)=>{
 router.get('/players',(req,res)=>{
     
     getAllPlayers().then((data)=>{
-        console.log('Jugadores obtenidos correctamente')
-        res.status(200).json(data);
+        console.log('Jugadores obtenidos correctamente');
+        var response = {
+            success:true,
+            data:data
+        };
+        res.status(200).json(response);
 
     }).catch((err) => {
         console.log('Error obteniendo jugadores');
@@ -247,7 +274,12 @@ router.get('/players/:id',(req,res)=>{
     };
     
     getPlayerById(data.id).then((data)=>{
-        res.status(200).json(data);
+
+        var response = {
+            success:true,
+            data:data
+        };
+        res.status(200).json(response);
 
     }).catch((err) => {
         console.log('Error obteniendo jugador');
@@ -272,7 +304,11 @@ router.patch('/players/:id',(req,res)=>{
             
             updatePlayer(data).then((dataResponse)=>{
                 
-                res.status(200).json(data);
+                var response = {
+                    success:true,
+                    data:data
+                };
+                res.status(200).json(response);
 
             }).catch((err) => {
                 console.log('Error actualizando jugador');
@@ -303,12 +339,16 @@ router.delete('/players/:id', (req, res)=>{
         //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
         deletePlayerProcess.on('message', (data) => {
             //Respondemos con OK
-            res.status(201).json(data);
+            var response = {
+                success:true,
+                data:data
+            };
+            res.status(201).json(response);
         });
 
         deletePlayerProcess.on('exit', () => {
             //Respondemos con KO
-            res.status(500).json({error:'Error eliminando jugador.'});
+            res.status(500).json({ success:false,error:'Error eliminando jugador.'});
         
         });
 
