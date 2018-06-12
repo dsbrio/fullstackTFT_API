@@ -5,6 +5,7 @@ const { fork } = require('child_process');
 const addTeamProcessUrl = 'src/process/team/addTeamProcess.js';
 const updateTeamProcessUrl = 'src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = 'src/process/team/deleteTeamProcess.js';
+const deletePlayerProcessUrl = 'src/process/player/deletePlayerProcess.js';
 
 const {login, generaToken, validarToken} = require('./utileria/login.js');
 
@@ -12,7 +13,7 @@ const {login, generaToken, validarToken} = require('./utileria/login.js');
 const {getTeams, getTeamById, deleteAll} = require('./model/teamModel.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {savePlayer, getPlayerById, getPlayersByTeamId, getAllPlayers} = require('./model/playerModel.js');
+const {savePlayer, getPlayerById, getPlayersByTeamId, getAllPlayers,updatePlayer,getAllPlayersByTeamId} = require('./model/playerModel.js');
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.post('/login', (req, res) => {
 
                 //respondemos con el token generado y datos de usuario.
                 var data = {
+                    "success":true,
                     "user" : userInfo, 
                     "token" : token
                 }
@@ -41,6 +43,7 @@ router.post('/login', (req, res) => {
         }else{
     
             res.status(401).send({
+                success:false,
                 error: 'usuario o contraseña inválidos'
             })
         }		
@@ -62,12 +65,17 @@ router.post('/teams',(req,res)=>{
 
             //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
             addTeamProcess.on('message', (responseBBDD) => {
-                res.status(201).json(responseBBDD);
+
+                var response ={
+                    success:true,
+                    data : responseBBDD
+                };
+                res.status(201).json(response);
             });
 
             addTeamProcess.on('exit', () => {
                 //Respondemos con OK
-                res.status(500).json({error:'Error creando equipo.'});
+                res.status(500).json({ success:false, error:'Error creando equipo.'});
             
             });
 
@@ -110,8 +118,13 @@ router.get('/teams/:id', (req, res)=>{
 
             var teamDataMod = teamData.toObject();
             teamDataMod.players = {playersData};
+
+            var response = {
+                success:true,
+                data:teamDataMod
+            }
             
-            res.status(200).json(teamDataMod);
+            res.status(200).json(response);
 
         }).catch((err) => {
             console.log('Error obteniendo jugadores del equipo');
@@ -127,69 +140,85 @@ router.get('/teams/:id', (req, res)=>{
 });
 
 
-//actualización de usuario con proceso hijo.
+//actualización de equipo con proceso hijo.
 router.patch('/teams/:id', (req, res)=>{
    
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+        let data = req.body;
+        data.id = req.params.id;
+
+        //realizamos llamada al proceso hijo.
+        const updateTeamProcess = fork(updateTeamProcessUrl);
     
-    let data = req.body;
-    data.id = req.params.id;
+        //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+        updateTeamProcess.on('message', (responseUpdateBBDD) => {
+            //Respondemos con OK
+            var response = {
+                success:true,
+                data:responseUpdateBBDD
+            };
+            res.status(201).json(response);
+        });
 
-    //realizamos llamada al proceso hijo.
-    const updateTeamProcess = fork(updateTeamProcessUrl);
-   
-    //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
-    updateTeamProcess.on('message', (responseUpdateBBDD) => {
-        //Respondemos con OK
-         res.status(201).json(responseUpdateBBDD);
+        updateTeamProcess.on('exit', () => {
+            //Respondemos con OK
+            res.status(500).json({success:false,error:'Error actualizando equipo.'});
+        
+        });
+
+        updateTeamProcess.send(data);   
     });
-
-    updateTeamProcess.on('exit', () => {
-        //Respondemos con OK
-        res.status(500).json({error:'Error actualizando equipo.'});
-       
-    });
-
-    updateTeamProcess.send(data);   
-   
 });
 
-//eliminación de usuario sin proceso hijo.
+//eliminación de equipo sin proceso hijo.
 router.delete('/team/:id', (req, res)=>{
-	
-    let data = req.body;
-    data.id = req.params.id;
+    validarToken(req.headers['authorization'], function(tokenValido){
 
-	//realizamos llamada al proceso hijo.
-    const deleteTeamProcess = fork(deleteTeamProcessUrl);
-   
-    //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
-    deleteTeamProcess.on('message', (responseUpdateBBDD) => {
-        //Respondemos con OK
-         res.status(201).json(responseUpdateBBDD);
+        let data = {
+            id : req.params.id
+        }
+    
+        //realizamos llamada al proceso hijo.
+        const deleteTeamProcess = fork(deleteTeamProcessUrl);
+    
+        //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+        deleteTeamProcess.on('message', (responseUpdateBBDD) => {
+            //Respondemos con OK
+            var response = {
+                success:true,
+                data:responseUpdateBBDD
+            };
+            res.status(201).json(response);
+        });
+
+        deleteTeamProcess.on('exit', () => {
+            //Respondemos con OK
+            res.status(500).json({  success:false,error:'Error actualizando usuario.'});
+        
+        });
+
+        deleteTeamProcess.send(data); 
     });
-
-    deleteTeamProcess.on('exit', () => {
-        //Respondemos con OK
-        res.status(500).json({error:'Error actualizando usuario.'});
-       
-    });
-
-    deleteTeamProcess.send(data); 
     
 });
 
-//eliminación de todos los usuarios
+//eliminación de todos los equipos
 router.delete('/teams', (req, res)=>{
        
-    deleteAll().then((data)=>{
-        console.log('Equipos borrados correctamente')
-        res.status(200).json({success:true});
+    validarToken(req.headers['authorization'], function(tokenValido){
 
-    }).catch((err) => {
-        console.log('Error borrando equipos');
-        console.log(err);
-        res.status(500).json({success:false});
-    });   
+        deleteAll().then((data)=>{
+            console.log('Equipos borrados correctamente')
+            res.status(200).json({success:true});
+
+        }).catch((err) => {
+            console.log('Error borrando equipos');
+            console.log(err);
+            res.status(500).json({success:false});
+        });   
+    });
+    
 });
 
 
@@ -202,7 +231,12 @@ router.post('/players',(req,res)=>{
             let data = req.body;
             savePlayer(data).then((data)=>{
                 console.log('Jugador creado correctamente')
-                res.status(200).json({data});
+                var response = {
+                    success:true,
+                    data : data
+                };
+
+                res.status(200).json(response);
         
             }).catch((err) => {
                 console.log('Error creando jugador');
@@ -219,12 +253,16 @@ router.post('/players',(req,res)=>{
 });
 
 
-//obtención del jugador sin proceso hijo.
+//obtención de jugadores sin proceso hijo.
 router.get('/players',(req,res)=>{
     
     getAllPlayers().then((data)=>{
-        console.log('Jugadores obtenidos correctamente')
-        res.status(200).json(data);
+        console.log('Jugadores obtenidos correctamente');
+        var response = {
+            success:true,
+            data:data
+        };
+        res.status(200).json(response);
 
     }).catch((err) => {
         console.log('Error obteniendo jugadores');
@@ -238,12 +276,17 @@ router.get('/players',(req,res)=>{
 //obtención del jugador sin proceso hijo.
 router.get('/players/:id',(req,res)=>{
 
-    let data = req.body;
-    data.id = req.params.id;
+    let data = {
+        id:req.params.id
+    };
     
     getPlayerById(data.id).then((data)=>{
-        console.log('Jugador obtenido correctamente')
-        res.status(200).json(data);
+
+        var response = {
+            success:true,
+            data:data
+        };
+        res.status(200).json(response);
 
     }).catch((err) => {
         console.log('Error obteniendo jugador');
@@ -254,5 +297,91 @@ router.get('/players/:id',(req,res)=>{
 });
 
 
+//edición del jugador sin proceso hijo.
+router.patch('/players/:id',(req,res)=>{
+
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+        if(tokenValido){
+
+           //obtenemos el body
+            let data = req.body;
+            //obtenemos el id del jugador
+            data.id = req.params.id;
+            
+            updatePlayer(data).then((dataResponse)=>{
+                
+                var response = {
+                    success:true,
+                    data:data
+                };
+                res.status(200).json(response);
+
+            }).catch((err) => {
+                console.log('Error actualizando jugador');
+                console.log(err);
+                res.status(500).json({success:false});
+            });  
+        }else{
+            //token no valido, 401
+            res.status(401).json({success:false, message:"No autorizado."});
+        }
+    });
+
+});
+
+//eliminación de jugador con proceso hijo.
+router.delete('/players/:id', (req, res)=>{
+    
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+
+        let data = {
+            id : req.params.id
+        }
+    
+        //realizamos llamada al proceso hijo.
+        const deletePlayerProcess = fork(deletePlayerProcessUrl);
+    
+        //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+        deletePlayerProcess.on('message', (data) => {
+            //Respondemos con OK
+            var response = {
+                success:true,
+                data:data
+            };
+            res.status(201).json(response);
+        });
+
+        deletePlayerProcess.on('exit', () => {
+            //Respondemos con KO
+            res.status(500).json({ success:false,error:'Error eliminando jugador.'});
+        
+        });
+
+        deletePlayerProcess.send(data); 
+    });
+    
+});
+
+
+//obtención de jugadores asociados a un equipo, pasandole el id del equipo.
+router.get('/players/team/:id',(req,res)=>{
+    
+    getAllPlayersByTeamId(req.params.id).then((data)=>{
+        console.log('Jugadores obtenidos correctamente');
+        var response = {
+            success:true,
+            data:data
+        };
+        res.status(200).json(response);
+
+    }).catch((err) => {
+        console.log('Error obteniendo jugadores');
+        console.log(err);
+        res.status(500).json({success:false});
+    });  
+    
+});
 
 module.exports = router;
