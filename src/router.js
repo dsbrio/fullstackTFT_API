@@ -143,75 +143,82 @@ router.get('/teams/:id', (req, res)=>{
 //actualización de equipo con proceso hijo.
 router.patch('/teams/:id', (req, res)=>{
    
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+        let data = req.body;
+        data.id = req.params.id;
+
+        //realizamos llamada al proceso hijo.
+        const updateTeamProcess = fork(updateTeamProcessUrl);
     
-    let data = req.body;
-    data.id = req.params.id;
+        //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+        updateTeamProcess.on('message', (responseUpdateBBDD) => {
+            //Respondemos con OK
+            var response = {
+                success:true,
+                data:responseUpdateBBDD
+            };
+            res.status(201).json(response);
+        });
 
-    //realizamos llamada al proceso hijo.
-    const updateTeamProcess = fork(updateTeamProcessUrl);
-   
-    //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
-    updateTeamProcess.on('message', (responseUpdateBBDD) => {
-        //Respondemos con OK
-        var response = {
-            success:true,
-            data:responseUpdateBBDD
-        };
-         res.status(201).json(response);
+        updateTeamProcess.on('exit', () => {
+            //Respondemos con OK
+            res.status(500).json({success:false,error:'Error actualizando equipo.'});
+        
+        });
+
+        updateTeamProcess.send(data);   
     });
-
-    updateTeamProcess.on('exit', () => {
-        //Respondemos con OK
-        res.status(500).json({success:false,error:'Error actualizando equipo.'});
-       
-    });
-
-    updateTeamProcess.send(data);   
-   
 });
 
 //eliminación de equipo sin proceso hijo.
 router.delete('/team/:id', (req, res)=>{
-	
-    let data = {
-        id : req.params.id
-    }
-   
-	//realizamos llamada al proceso hijo.
-    const deleteTeamProcess = fork(deleteTeamProcessUrl);
-   
-    //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
-    deleteTeamProcess.on('message', (responseUpdateBBDD) => {
-        //Respondemos con OK
-        var response = {
-            success:true,
-            data:responseUpdateBBDD
-        };
-         res.status(201).json(response);
-    });
+    validarToken(req.headers['authorization'], function(tokenValido){
 
-    deleteTeamProcess.on('exit', () => {
-        //Respondemos con OK
-        res.status(500).json({  success:false,error:'Error actualizando usuario.'});
-       
-    });
+        let data = {
+            id : req.params.id
+        }
+    
+        //realizamos llamada al proceso hijo.
+        const deleteTeamProcess = fork(deleteTeamProcessUrl);
+    
+        //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+        deleteTeamProcess.on('message', (responseUpdateBBDD) => {
+            //Respondemos con OK
+            var response = {
+                success:true,
+                data:responseUpdateBBDD
+            };
+            res.status(201).json(response);
+        });
 
-    deleteTeamProcess.send(data); 
+        deleteTeamProcess.on('exit', () => {
+            //Respondemos con OK
+            res.status(500).json({  success:false,error:'Error actualizando usuario.'});
+        
+        });
+
+        deleteTeamProcess.send(data); 
+    });
     
 });
 
 //eliminación de todos los equipos
 router.delete('/teams', (req, res)=>{
        
-    deleteAll().then((data)=>{
-        console.log('Equipos borrados correctamente')
-        res.status(200).json({success:true});
+    validarToken(req.headers['authorization'], function(tokenValido){
 
-    }).catch((err) => {
-        console.log('Error borrando equipos');
-        console.log(err);
-        res.status(500).json({success:false});
-    });   
+        deleteAll().then((data)=>{
+            console.log('Equipos borrados correctamente')
+            res.status(200).json({success:true});
+
+        }).catch((err) => {
+            console.log('Error borrando equipos');
+            console.log(err);
+            res.status(500).json({success:false});
+        });   
+    });
+    
 });
 
 
