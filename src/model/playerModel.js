@@ -80,3 +80,13 @@ exports.deleteAll = () =>{
     return Player.remove({});
 };
 
+//obtienen el listado de todos los jugadores de la BD.
+exports.getAllPlayersByTeamId = (teamId)=>{
+    
+    let jsonBusqueda= {team:teamId};
+
+    let listPlayers = Player.find(jsonBusqueda).exec();
+
+    return listPlayers;
+};
+
