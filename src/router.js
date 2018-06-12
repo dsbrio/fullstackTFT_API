@@ -7,7 +7,7 @@ const updateTeamProcessUrl = 'src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = 'src/process/team/deleteTeamProcess.js';
 const deletePlayerProcessUrl = 'src/process/player/deletePlayerProcess.js';
 
-const {login, generaToken, validarToken} = require('./utileria/login.js');
+const {login, generaToken, validarToken,logout} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
 const {getTeams, getTeamById, deleteAll} = require('./model/teamModel.js');
@@ -48,6 +48,29 @@ router.post('/login', (req, res) => {
             })
         }		
 	});
+});
+
+//Realizamos un borrado del token para el usuario que lo contiene.
+router.post('/logout', (req, res) => {
+
+    //obtenemos los parametros de la petición, en este caso el token
+   var token = req.headers['authorization'];
+
+   validarToken(req.headers['authorization'], function(tokenValido){
+
+        if(tokenValido){
+            //Si el token es valido, entonces podemos borrarlo.
+            logout(token, function(logoutOk){
+                res.status(200).send({
+                    success:logoutOk
+                })
+            });
+            
+        }else{
+            res.status(401).json({success:false, message:"No autorizado."});
+        }
+   });
+    
 });
 
 //creación del equipo con proceso hijo.
@@ -225,6 +248,8 @@ router.delete('/teams', (req, res)=>{
 //creación del jugador sin proceso hijo.
 router.post('/players',(req,res)=>{
     validarToken(req.headers['authorization'], function(tokenValido){
+
+        console.log('tokenValido',tokenValido);
 
         if(tokenValido){
 

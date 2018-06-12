@@ -100,6 +100,8 @@ exports.validarToken = (token, callback) => {
                 && token==data[0].token){
                     //existe un usuario con ese token.
                    callback(true);
+                }else{
+                    callback(false);
                 }
 
             }).catch((err) => {
@@ -108,6 +110,35 @@ exports.validarToken = (token, callback) => {
                 callback(false);
             });
         }
+      });
+
+}
+
+exports.logout = (token, callback) => {
+
+	//se elimina, segun el tutorial xq lo añade por defecto http
+    token = token.replace('Bearer ', '');
+
+    //Verificamos con la clave secreta si el token es valido.
+    jwt.verify(token, secretKey, function(err, tokenData) {
+        if (err) {
+            console.log('token invalido');
+            console.log(err);
+            callback(false);
+
+        } else {
+           
+            updateToken(tokenData.user,'').then((data)=>{
+               
+                callback(true);
+
+            }).catch((err) => {
+                console.log('Error logout token');
+                console.log(err);
+                callback(false);
+            });           
+        }
+
       });
 
 }
