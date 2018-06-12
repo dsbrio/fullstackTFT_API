@@ -5,6 +5,7 @@ const { fork } = require('child_process');
 const addTeamProcessUrl = 'src/process/team/addTeamProcess.js';
 const updateTeamProcessUrl = 'src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = 'src/process/team/deleteTeamProcess.js';
+const deletePlayerProcessUrl = 'src/process/team/deletePlayerProcess.js';
 
 const {login, generaToken, validarToken} = require('./utileria/login.js');
 
@@ -12,7 +13,7 @@ const {login, generaToken, validarToken} = require('./utileria/login.js');
 const {getTeams, getTeamById, deleteAll} = require('./model/teamModel.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {savePlayer, getPlayerById, getPlayersByTeamId, getAllPlayers} = require('./model/playerModel.js');
+const {savePlayer, getPlayerById, getPlayersByTeamId, getAllPlayers,updatePlayer} = require('./model/playerModel.js');
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.post('/login', (req, res) => {
 
                 //respondemos con el token generado y datos de usuario.
                 var data = {
+                    "success":true,
                     "user" : userInfo, 
                     "token" : token
                 }
@@ -41,6 +43,7 @@ router.post('/login', (req, res) => {
         }else{
     
             res.status(401).send({
+                success:false,
                 error: 'usuario o contraseña inválidos'
             })
         }		
@@ -127,7 +130,7 @@ router.get('/teams/:id', (req, res)=>{
 });
 
 
-//actualización de usuario con proceso hijo.
+//actualización de equipo con proceso hijo.
 router.patch('/teams/:id', (req, res)=>{
    
     
@@ -153,12 +156,13 @@ router.patch('/teams/:id', (req, res)=>{
    
 });
 
-//eliminación de usuario sin proceso hijo.
+//eliminación de equipo sin proceso hijo.
 router.delete('/team/:id', (req, res)=>{
 	
-    let data = req.body;
-    data.id = req.params.id;
-
+    let data = {
+        id : req.params.id
+    }
+   
 	//realizamos llamada al proceso hijo.
     const deleteTeamProcess = fork(deleteTeamProcessUrl);
    
@@ -178,7 +182,7 @@ router.delete('/team/:id', (req, res)=>{
     
 });
 
-//eliminación de todos los usuarios
+//eliminación de todos los equipos
 router.delete('/teams', (req, res)=>{
        
     deleteAll().then((data)=>{
@@ -219,7 +223,7 @@ router.post('/players',(req,res)=>{
 });
 
 
-//obtención del jugador sin proceso hijo.
+//obtención de jugadores sin proceso hijo.
 router.get('/players',(req,res)=>{
     
     getAllPlayers().then((data)=>{
@@ -238,11 +242,11 @@ router.get('/players',(req,res)=>{
 //obtención del jugador sin proceso hijo.
 router.get('/players/:id',(req,res)=>{
 
-    let data = req.body;
-    data.id = req.params.id;
+    let data = {
+        id:req.params.id
+    };
     
     getPlayerById(data.id).then((data)=>{
-        console.log('Jugador obtenido correctamente')
         res.status(200).json(data);
 
     }).catch((err) => {
@@ -254,5 +258,63 @@ router.get('/players/:id',(req,res)=>{
 });
 
 
+//edición del jugador sin proceso hijo.
+router.patch('/players/:id',(req,res)=>{
+
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+        if(tokenValido){
+
+           //obtenemos el body
+            let data = req.body;
+            //obtenemos el id del jugador
+            data.id = req.params.id;
+            
+            updatePlayer(data).then((dataResponse)=>{
+                
+                res.status(200).json(data);
+
+            }).catch((err) => {
+                console.log('Error actualizando jugador');
+                console.log(err);
+                res.status(500).json({success:false});
+            });  
+        }else{
+            //token no valido, 401
+            res.status(401).json({success:false, message:"No autorizado."});
+        }
+    });
+
+});
+
+//eliminación de jugador con proceso hijo.
+router.delete('/players/:id', (req, res)=>{
+    
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+
+        let data = {
+            id : req.params.id
+        }
+    
+        //realizamos llamada al proceso hijo.
+        const deletePlayerProcess = fork(deletePlayerProcessUrl);
+    
+        //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+        deletePlayerProcess.on('message', (data) => {
+            //Respondemos con OK
+            res.status(201).json(data);
+        });
+
+        deletePlayerProcess.on('exit', () => {
+            //Respondemos con KO
+            res.status(500).json({error:'Error eliminando jugador.'});
+        
+        });
+
+        deletePlayerProcess.send(data); 
+    });
+    
+});
 
 module.exports = router;

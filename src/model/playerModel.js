@@ -50,6 +50,7 @@ exports.getPlayerById = (playerId)=>{
 
     //formamos el json con el cual realizar la búsqueda.
     let jsonBusqueda= {_id:playerId};
+
     //obtenemos el listado de equipos por busqueda, en este caso solo saldra uno.
     let listPlayers = Player.find(jsonBusqueda).exec();
 
@@ -61,10 +62,11 @@ exports.updatePlayer = (data) =>{
 
     let jsonBusqueda= {_id:data.id};
 
-    var newvalues ={$set: {name: data.name, colors: data.colors, stadium:data.stadium } };
+    var newvalues ={$set: {name: data.name, secondname:data.secondname, nationality:data.nationality, 
+        colors: data.colors, team:data.team, characteristics:data.characteristics} };
 
-    return Player.findOneAndUpdate(jsonBusqueda,newvalues);
-   
+   return Player.findOneAndUpdate(jsonBusqueda,newvalues);
+
 };
 
 //Borrado de un equipo por id.
