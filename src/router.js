@@ -5,7 +5,7 @@ const { fork } = require('child_process');
 const addTeamProcessUrl = 'src/process/team/addTeamProcess.js';
 const updateTeamProcessUrl = 'src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = 'src/process/team/deleteTeamProcess.js';
-const deletePlayerProcessUrl = 'src/process/team/deletePlayerProcess.js';
+const deletePlayerProcessUrl = 'src/process/player/deletePlayerProcess.js';
 
 const {login, generaToken, validarToken} = require('./utileria/login.js');
 
