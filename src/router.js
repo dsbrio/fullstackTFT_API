@@ -6,6 +6,7 @@ const addTeamProcessUrl = 'src/process/team/addTeamProcess.js';
 const updateTeamProcessUrl = 'src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = 'src/process/team/deleteTeamProcess.js';
 const deletePlayerProcessUrl = 'src/process/player/deletePlayerProcess.js';
+const addPlayerProcessUrl = 'src/process/player/addPlayerProcess.js';
 
 const {login, generaToken, validarToken,logout} = require('./utileria/login.js');
 
@@ -230,23 +231,29 @@ router.delete('/team/:id', (req, res)=>{
 router.delete('/teams', (req, res)=>{
        
     validarToken(req.headers['authorization'], function(tokenValido){
+        if(tokenValido){
+            deleteAll().then((data)=>{
+                console.log('Equipos borrados correctamente')
+                res.status(200).json({success:true});
 
-        deleteAll().then((data)=>{
-            console.log('Equipos borrados correctamente')
-            res.status(200).json({success:true});
-
-        }).catch((err) => {
-            console.log('Error borrando equipos');
-            console.log(err);
-            res.status(500).json({success:false});
-        });   
+            }).catch((err) => {
+                console.log('Error borrando equipos');
+                console.log(err);
+                res.status(500).json({success:false});
+            });   
+        }else{
+            //token no valido, 401
+            res.status(401).json({success:false, message:"No autorizado."});
+        }
     });
+    
     
 });
 
 
-//creación del jugador sin proceso hijo.
+//creación del jugador con proceso hijo.
 router.post('/players',(req,res)=>{
+
     validarToken(req.headers['authorization'], function(tokenValido){
 
         console.log('tokenValido',tokenValido);
@@ -254,20 +261,28 @@ router.post('/players',(req,res)=>{
         if(tokenValido){
 
             let data = req.body;
-            savePlayer(data).then((data)=>{
-                console.log('Jugador creado correctamente')
+            data.id = req.params.id;
+
+            //realizamos llamada al proceso hijo.
+            const addPlayerProcess = fork(addPlayerProcessUrl);
+        
+            //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+            addPlayerProcess.on('message', (responseUpdateBBDD) => {
+                //Respondemos con OK
                 var response = {
                     success:true,
-                    data : data
+                    data:responseUpdateBBDD
                 };
+                res.status(201).json(response);
+            });
 
-                res.status(200).json(response);
-        
-            }).catch((err) => {
-                console.log('Error creando jugador');
-                console.log(err);
-                res.status(500).json({success:false});
-            });   
+            addPlayerProcess.on('exit', () => {
+                //Respondemos con OK
+                res.status(500).json({success:false,error:'Error creando jugador.'});
+            
+            });
+
+            addPlayerProcess.send(data);   
 
         }else{
             //token no valido, 401

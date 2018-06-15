@@ -17,7 +17,8 @@ const PlayerSchema = mongoose.Schema({
         height: Number
     },
     nationality: String,
-    team: String
+    team: String,
+    photo: String
 });
 
 
