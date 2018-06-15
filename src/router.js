@@ -7,6 +7,7 @@ const updateTeamProcessUrl = 'src/process/team/updateTeamProcess.js';
 const deleteTeamProcessUrl = 'src/process/team/deleteTeamProcess.js';
 const deletePlayerProcessUrl = 'src/process/player/deletePlayerProcess.js';
 const addPlayerProcessUrl = 'src/process/player/addPlayerProcess.js';
+const updatePlayerProcessUrl = 'src/process/player/updatePlayerProcess.js';
 
 const {login, generaToken, validarToken,logout} = require('./utileria/login.js');
 
@@ -350,24 +351,29 @@ router.patch('/players/:id',(req,res)=>{
 
         if(tokenValido){
 
-           //obtenemos el body
             let data = req.body;
-            //obtenemos el id del jugador
             data.id = req.params.id;
-            
-            updatePlayer(data).then((dataResponse)=>{
-                
-                var response = {
-                    success:true,
-                    data:data
-                };
-                res.status(200).json(response);
 
-            }).catch((err) => {
-                console.log('Error actualizando jugador');
-                console.log(err);
-                res.status(500).json({success:false});
-            });  
+            //realizamos llamada al proceso hijo.
+            const updatePlayerProcess = fork(updatePlayerProcessUrl);
+        
+            //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+            updatePlayerProcess.on('message', (responseUpdateBBDD) => {
+                //Respondemos con OK
+                var response = {
+                    success:true
+                };
+                res.status(201).json(response);
+            });
+
+            updatePlayerProcess.on('exit', () => {
+                //Respondemos con OK
+                res.status(500).json({success:false,error:'Error actualizando jugador.'});
+            
+            });
+
+            updatePlayerProcess.send(data);   
+
         }else{
             //token no valido, 401
             res.status(401).json({success:false, message:"No autorizado."});
