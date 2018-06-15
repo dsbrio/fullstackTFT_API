@@ -12,10 +12,10 @@ const updatePlayerProcessUrl = 'src/process/player/updatePlayerProcess.js';
 const {login, generaToken, validarToken,logout} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {getTeams, getTeamById, deleteAll} = require('./model/teamModel.js');
+const {getTeams, getTeamById, deleteAll, getTeamNameById} = require('./model/teamModel.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {savePlayer, getPlayerById, getPlayersByTeamId, getAllPlayers,updatePlayer,getAllPlayersByTeamId} = require('./model/playerModel.js');
+const {getPlayerById, getPlayersByTeamId, getAllPlayers,getAllPlayersByTeamId} = require('./model/playerModel.js');
 
 const router = express.Router();
 
@@ -329,12 +329,23 @@ router.get('/players/:id',(req,res)=>{
             playerInfo=data[0];
         }
         
-        var response = {
-            success:true,
-            data:playerInfo
-        };
-        res.status(200).json(response);
+        getTeamNameById(playerInfo.team).then((data)=>{
 
+            let player = playerInfo.toObject();
+
+            player.teamName = data.name;
+            
+            var response = {
+                success:true,
+                data:player
+            };
+            res.status(200).json(response);
+
+        }).catch((err) => {
+            console.log('Error obteniendo jugador');
+            console.log(err);
+            res.status(500).json({success:false});
+        });  
     }).catch((err) => {
         console.log('Error obteniendo jugador');
         console.log(err);
