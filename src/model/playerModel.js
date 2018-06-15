@@ -31,7 +31,11 @@ exports.savePlayer = (data) =>{
 
 //obtienen el listado de todos los jugadores de la BD.
 exports.getAllPlayers = ()=>{
-    let listPlayers = Player.find().exec();
+
+    //proyección para no obtener todos los atributos
+    let proyection = "id name secondname team"
+
+    let listPlayers = Player.find({}, proyection).exec();
 
     return listPlayers;
 };
@@ -44,6 +48,7 @@ exports.getPlayersByTeamId = (teamId)=>{
 
     //proyección para no obtener todos los atributos
     let proyection = "id name secondname"
+
     let listPlayers = Player.find(jsonBusqueda, proyection).exec();
 
     return listPlayers;
