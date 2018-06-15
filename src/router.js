@@ -271,7 +271,7 @@ router.post('/players',(req,res)=>{
                 //Respondemos con OK
                 var response = {
                     success:true,
-                    data:responseUpdateBBDD
+                    playerId:responseUpdateBBDD._id
                 };
                 res.status(201).json(response);
             });
