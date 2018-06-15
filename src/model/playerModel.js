@@ -41,7 +41,10 @@ exports.getPlayersByTeamId = (teamId)=>{
 
     //formamos el json con el cual realizar la búsqueda.
     let jsonBusqueda= {team:teamId};
-    let listPlayers = Player.find(jsonBusqueda).exec();
+
+    //proyección para no obtener todos los atributos
+    let proyection = "id name secondname"
+    let listPlayers = Player.find(jsonBusqueda, proyection).exec();
 
     return listPlayers;
 };
