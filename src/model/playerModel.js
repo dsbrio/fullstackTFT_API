@@ -99,3 +99,13 @@ exports.getAllPlayersByTeamId = (teamId)=>{
     return listPlayers;
 };
 
+//borra los jugadores pertenecientes a un equipo
+exports.deleteAllPlayersByTeamId = (teamId)=>{
+    
+    let jsonBusqueda= {team:teamId};
+
+    let listPlayers = Player.remove(jsonBusqueda).exec();
+
+    return listPlayers;
+};
+

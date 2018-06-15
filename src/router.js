@@ -197,7 +197,7 @@ router.patch('/teams/:id', (req, res)=>{
 });
 
 //eliminación de equipo sin proceso hijo.
-router.delete('/team/:id', (req, res)=>{
+router.delete('/teams/:id', (req, res)=>{
     validarToken(req.headers['authorization'], function(tokenValido){
 
         let data = {
@@ -333,7 +333,12 @@ router.get('/players/:id',(req,res)=>{
 
             let player = playerInfo.toObject();
 
-            player.teamName = data.name;
+            if(data != null){
+                player.teamName = data.name;
+            }else{
+                player.teamName = "";
+            }
+            
             
             var response = {
                 success:true,
