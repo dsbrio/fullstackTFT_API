@@ -12,6 +12,8 @@ const { fork } = require('child_process')
 
 //importamos nuestro fichero router que contiene la definición de las url para la petición http.
 const router = require('./router.js');
+const routerPlayers = require('./routerPlayers.js');
+const routerTeams = require('./routerTeams.js');
 
 //indicamos el puerto en el que queremos que nuestro servidor este escuchando.
 const port = 3000;
@@ -27,5 +29,7 @@ app.set('port', process.env.PORT || 3000);
 
 //indicamos la url base sobre la que va a atender peticiones nuestro servidor.
 app.use('/api/v1/', router);
+app.use('/api/v1/players', routerPlayers);
+app.use('/api/v1/teams', routerTeams);
 
 app.listen(app.get('port'));
