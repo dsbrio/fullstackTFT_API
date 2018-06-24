@@ -32,4 +32,13 @@ app.use('/api/v1/', router);
 app.use('/api/v1/players', routerPlayers);
 app.use('/api/v1/teams', routerTeams);
 
+// Add headers
+app.use(function (req, res, next) {
+
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  next();
+});
+
 app.listen(app.get('port'));
