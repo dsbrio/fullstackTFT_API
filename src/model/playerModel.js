@@ -7,6 +7,8 @@ mongodb://<dbteam>:<dbpassword>@ds016118.mlab.com:16118/tft
 mongoose.connect('mongodb://tft:tft@ds016118.mlab.com:16118/tft');
 mongoose.Promise = global.Promise;
 
+var Schema = mongoose.Schema;
+
 const PlayerSchema = mongoose.Schema({
     id: String,
     name: String,
@@ -18,7 +20,7 @@ const PlayerSchema = mongoose.Schema({
     },
     nationality: String,
     position: String,
-    team: String,
+    team: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
     photo: String,
     statistics:{
         goals: Number,
@@ -44,7 +46,7 @@ exports.getAllPlayers = ()=>{
     //proyección para no obtener todos los atributos
     let proyection = "id name secondname characteristics.age characteristics.weight characteristics.height nationality position team photo"
 
-    let listPlayers = Player.find({}, proyection).exec();
+    let listPlayers = Player.find({}, proyection).populate('team', 'name').exec();
 
     return listPlayers;
 };
