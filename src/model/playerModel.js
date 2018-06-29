@@ -17,6 +17,7 @@ const PlayerSchema = mongoose.Schema({
         height: Number
     },
     nationality: String,
+    position: String,
     team: String,
     photo: String
 });
@@ -33,7 +34,7 @@ exports.savePlayer = (data) =>{
 exports.getAllPlayers = ()=>{
 
     //proyección para no obtener todos los atributos
-    let proyection = "id name secondname team"
+    let proyection = "id name secondname characteristics.age characteristics.weight characteristics.height nationality position team photo"
 
     let listPlayers = Player.find({}, proyection).exec();
 
@@ -47,14 +48,14 @@ exports.getPlayersByTeamId = (teamId)=>{
     let jsonBusqueda= {team:teamId};
 
     //proyección para no obtener todos los atributos
-    let proyection = "id name secondname"
+    let proyection = "id name secondname characteristics.age characteristics.weight characteristics.height nationality position team photo"
 
     let listPlayers = Player.find(jsonBusqueda, proyection).exec();
 
     return listPlayers;
 };
 
-//obtiene el equipo por su id.
+//obtiene todos los datos del jugadro por su id.
 exports.getPlayerById = (playerId)=>{
 
     //formamos el json con el cual realizar la búsqueda.
