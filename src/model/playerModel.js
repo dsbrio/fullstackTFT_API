@@ -19,7 +19,15 @@ const PlayerSchema = mongoose.Schema({
     nationality: String,
     position: String,
     team: String,
-    photo: String
+    photo: String,
+    statistics:{
+        goals: Number,
+        titles: Number,
+        teamsPlayed: [String]
+    },
+    strengths:[String],
+    weaknesses:[String],
+    comments: String
 });
 
 
