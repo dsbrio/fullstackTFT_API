@@ -14,6 +14,7 @@ const { fork } = require('child_process')
 const router = require('./router.js');
 const routerPlayers = require('./routerPlayers.js');
 const routerTeams = require('./routerTeams.js');
+const routerNews = require('./routerNews.js');
 
 //indicamos el puerto en el que queremos que nuestro servidor este escuchando.
 const port = 3000;
@@ -46,6 +47,7 @@ app.set('port', process.env.PORT || 3000);
 app.use('/api/v1/', router);
 app.use('/api/v1/players', routerPlayers);
 app.use('/api/v1/teams', routerTeams);
+app.use('/api/v1/news', routerNews);
 
 
 
