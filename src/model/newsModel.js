@@ -31,7 +31,11 @@ const News = mongoose.model('News', NewsSchema);
 
 //Inserta el modelo en base de datos
 exports.saveNews = (data) =>{
-    data.date = new Date();
+    
+    if(data.date == null || isNaN(Date.parse(data.date))){
+        data.date = new Date();
+    }
+    
     return (new News(data)).save();
 };
 

@@ -70,6 +70,33 @@ routerNews.get('/',(req,res)=>{
     
 });
 
+//obtención de noticias posteriores a cierta fecha
+routerNews.get('/filter',(req,res)=>{
+    
+    
+    if(req.query != null && req.query.date != null && Date.parse(req.query.date) != NaN){
+        let date = new Date(req.query.date);
+        console.log(date);
+    
+        getNewsAfterDate(date).then((data)=>{
+            console.log('Noticias obtenidas correctamente');
+            var response = {
+                success:true,
+                data:data
+            };
+            res.status(200).json(response);
+
+        }).catch((err) => {
+            console.log('Error obteniendo noticias');
+            console.log(err);
+            res.status(500).json({success:false});
+        });  
+    }else{
+        res.status(500).json({success:false, message:"Falta fecha de filtro o formato incorrecto => ?date=YYYY-MM-dd"});
+    }
+        
+});
+
 
 //borra las noticias de la BD
 routerNews.delete('/', (req, res)=>{
