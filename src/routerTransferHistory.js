@@ -11,12 +11,34 @@ routerTransferHistory.get('/:id',(req,res)=>{
     var jsonBusqueda={playerId : req.params.id};
 
     findTransferHistoryWithData(jsonBusqueda).then((data)=>{
-        console.log('Historico transferencia de jguador obtenidos correctamente');
-        var response = {
+         
+          var response = {
             success:true,
-            data:data
-        };
-        res.status(200).json(response);
+            playerInfo : {},
+            data:[]
+          };
+
+          if(null!=data && 0<data.length){
+
+            var playerInfo = {
+                name:data[0].playerId.name,
+                surname:data[0].playerId.secondname
+            }
+               
+            response.playerInfo = playerInfo;
+            response.data = data;
+            
+            console.log('Historico transferencia de jguador obtenidos correctamente');
+
+            res.status(200).json(response);
+
+          }else{
+            console.log('Historico transferencia de jguador obtenidos correctamente');
+
+            res.status(200).json(response);
+          }
+        
+       
 
     }).catch((err) => {
         console.log('Error obteniendo transferencias de jugador');
