@@ -125,7 +125,7 @@ routerPlayers.get('/:id',(req,res)=>{
 });
 
 
-//edición del jugador sin proceso hijo.
+//edición del jugador con proceso hijo.
 routerPlayers.patch('/:id',(req,res)=>{
 
     validarToken(req.headers['authorization'], function(tokenValido){

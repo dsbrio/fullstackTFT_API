@@ -5,7 +5,9 @@ const { fork } = require('child_process');
 const {validarToken} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {saveNews, getAllNews,getNewsAfterDate} = require('./model/newsModel.js');
+const {saveNews, getAllNews,getNewsAfterDate, deleteAllNews} = require('./model/newsModel.js');
+
+const addNewsProcessUrl = 'src/process/news/addNewsProcess.js';
 
 const routerNews = express.Router();
 
@@ -18,19 +20,27 @@ routerNews.post('/',(req,res)=>{
         console.log('tokenValido',tokenValido);
 
         if(tokenValido){
+            let data = req.body;
 
-            saveNews(req.body).then((data)=>{
-                console.log(req.params);
+            //realizamos llamada al proceso hijo.
+            const addNewsProcess = fork(addNewsProcessUrl);
+
+            //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+            addNewsProcess.on('message', (responseUpdateBBDD) => {
+                //Respondemos con OK
                 var response = {
                     success:true
                 };
-                res.status(200).json(response);
-        
-            }).catch((err) => {
-                console.log('Error insertando noticias');
-                console.log(err);
-                res.status(500).json({success:false});
-            });  
+                res.status(201).json(response);
+            });
+
+            addNewsProcess.on('exit', () => {
+                //Respondemos con OK
+                res.status(500).json({success:false,error:'Error creando noticia.'});
+
+            });
+
+            addNewsProcess.send(data);   
 
         }else{
             //token no valido, 401
@@ -57,6 +67,31 @@ routerNews.get('/',(req,res)=>{
         console.log(err);
         res.status(500).json({success:false});
     });  
+    
+});
+
+
+//borra las noticias de la BD
+routerNews.delete('/', (req, res)=>{
+    
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+        console.log('tokenValido',tokenValido);
+    
+        deleteAllNews().then((data)=>{
+            console.log('Noticias borradas correctamente');
+            var response = {
+                success:true
+            };
+            res.status(200).json(response);
+    
+        }).catch((err) => {
+            console.log('Error borrando noticias');
+            console.log(err);
+            res.status(500).json({success:false});
+        });  
+
+    });
     
 });
 

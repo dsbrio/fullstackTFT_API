@@ -31,19 +31,8 @@ const News = mongoose.model('News', NewsSchema);
 
 //Inserta el modelo en base de datos
 exports.saveNews = (data) =>{
-    cloudinary.v2.uploader.upload("data:image/png;base64,"+ data.photo, 
-    function(error, result) {
-        if(error){
-            console.log('Noticia no creada: fallo al subir foto a la nube');   
-            process.exit();
-        }else{
-            console.log("foto de la noticia subido a la nube");
-            data.date = new Date();
-            data.photo = result.url;
-
-            return (new News(data)).save();
-        }
-    });
+    data.date = new Date();
+    return (new News(data)).save();
 };
 
 //obtienen el listado de todos los jugadores de la BD.
@@ -63,6 +52,13 @@ exports.getNewsAfterDate = (dateFrom)=>{
     let listNews = News.find(jsonBusqueda).exec();
 
     return listNews;
+};
+
+
+//obtienen el listado de todos los jugadores pertenecientes a un equipo.
+exports.deleteAllNews = ()=>{
+
+    return News.remove({});
 };
 
 
