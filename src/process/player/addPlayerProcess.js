@@ -31,17 +31,25 @@ process.on('message', (data) => {
                 savePlayer(data).then((responseBBDD) => {
                     console.log('jugador creado correctamente.');
 
-                    var transferHistoryData ={
-                        userId: responseBBDD.id,
-                        teamId : responseBBDD.team,
-                        startDate: getDateTime(),
-                        endDate:""
-                    };
+                        //Componemos el objeto de transferencia
+                        var transferHistoryData ={
+                            playerId: responseBBDD._id,
+                            teamId : data.team,
+                            startDate: getDateTime(),
+                            endDate:""
+                        };
 
+                        saveTransferHistory(transferHistoryData).then((responsetransfer) =>{
 
-                    console.log('transferHistoryData',transferHistoryData);
+                            console.log('jugador creado correctamente.');
 
-                    process.send(responseBBDD);
+                            process.send(responseBBDD);
+
+                        }).catch((err) =>{
+                            console.log('historico de transferencias no creado.');
+                            process.exit();   
+                        });
+                    
                 })
                 .catch((err) =>{
                     console.log('jugador no creado correctamente.');   
@@ -57,7 +65,7 @@ process.on('message', (data) => {
            
             //Componemos el objeto de transferencia
             var transferHistoryData ={
-                userId: responseBBDD._id,
+                playerId: responseBBDD._id,
                 teamId : data.team,
                 startDate: getDateTime(),
                 endDate:""
@@ -72,8 +80,6 @@ process.on('message', (data) => {
             }).catch((err) =>{
                 console.log('historico de transferencias no creado.');   
             });
-            
-            
 
         })
         .catch((err) =>{
