@@ -1,5 +1,8 @@
 //importamos el modelo de equipo para poder relacionarnos con la base de datos.
 const {updatePlayer} = require ('../../model/playerModel.js');
+const {getDateTime} = require ('../../utileria/general.js');
+
+const {saveTransferHistory,findTransferHistory,updateEndDateTransferHistory} = require ('../../model/transferHistoryModel.js');
 
 var cloudinary = require('cloudinary');
 
@@ -37,7 +40,74 @@ function update(data){
 
     updatePlayer(data).then((responseBBDD) => {
         console.log('Jugador actualizado correctamente.');
-        process.send(data);
+        
+        if(null!=data.oldTeam && null!=data.team && ""!=data.oldTeam && ""!=data.team
+          && data.team!=data.oldTeam){
+            //existen los datos de equipo y son distintos
+
+            //buscamos la ultima tranferencia en el historico sin fecha fin para el jugador con el equipo anterior
+            let jsonBusqueda= {playerId:data.id, teamId:data.oldTeam, endDate:""};
+            findTransferHistory(jsonBusqueda).then((lastTranferHistory) => {
+                
+                if(null!=lastTranferHistory){
+                    //actualizamos fecha de fin
+
+                    updateEndDateTransferHistory(jsonBusqueda,getDateTime()).then((responseUpdateDate) => {
+                        //Se ha actualizado la fecha, por tanto creamos un nuevo transfer con el equipo actual
+                        //y la fecha fin sin informar.
+
+                        //Componemos el objeto de transferencia
+                        var transferHistoryData ={
+                            playerId: data.id,
+                            teamId : data.team,
+                            startDate: getDateTime(),
+                            endDate:""
+                        };
+
+                        saveTransferHistory(transferHistoryData).then((responsetransfer) =>{
+
+                            process.send(responseBBDD);
+
+                        }).catch((err) =>{
+                            console.log('historico de transferencias no creado.',err);
+                            process.exit();   
+                        });
+
+                    }).catch((err) =>{
+                        console.log('historico de transferencias no creado.');
+                        process.exit();   
+                    });
+
+                }else{
+
+                    //Componemos el objeto de transferencia ya que no habia ninguno antes
+                    var transferHistoryData ={
+                        playerId: data.id,
+                        teamId : data.team,
+                        startDate: getDateTime(),
+                        endDate:""
+                    };
+
+                    saveTransferHistory(transferHistoryData).then((responsetransfer) =>{
+
+                        process.send(responseBBDD);
+
+                    }).catch((err) =>{
+                        console.log('historico de transferencias no creado.',err);
+                        process.exit();   
+                    });
+
+                }
+
+            }).catch((err) =>{
+                console.log('historico de transferencias no creado.',err);
+                process.exit();   
+            });
+
+        }else{
+            process.send(responseBBDD);
+        }
+       
      })
      .catch((err) =>{
          console.log('Jugador no actualizado correctamente.');   
