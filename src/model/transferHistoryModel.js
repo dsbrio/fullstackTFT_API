@@ -5,11 +5,13 @@ mongodb://<dbteam>:<dbpassword>@ds016118.mlab.com:16118/tft
 mongoose.connect('mongodb://tft:tft@ds016118.mlab.com:16118/tft');
 mongoose.Promise = global.Promise;
 
+var Schema = mongoose.Schema;
+
 //Indicamos el esquema de usuario
 const TransferHistorySchema = mongoose.Schema({
     id : String,
-	playerId : String,
-    teamId :String,
+	playerId : { type: Schema.Types.ObjectId, ref: 'Player' },
+    teamId : { type: Schema.Types.ObjectId, ref: 'Team' },
     startDate:String,
     endDate:String
 });
@@ -31,4 +33,13 @@ exports.updateEndDateTransferHistory = (jsonBusqueda, date) => {
     var newValue = {$set: {endDate:date}};
     return TransferHistory.findOneAndUpdate(jsonBusqueda,newValue);
 
+};
+
+exports.findTransferHistoryWithData = (jsonBusqueda) => {
+
+
+    return TransferHistory.find(jsonBusqueda)
+    .populate('teamId', ['name','shield'])
+    .populate('playerId', ['name','secondname'])
+    .exec();
 };

@@ -3,15 +3,14 @@ const express = require('express');
 
 const routerTransferHistory = express.Router();
 
-const {findTransferHistory} = require ('./model/transferHistoryModel.js');
-
+const {findTransferHistoryWithData} = require ('./model/transferHistoryModel.js');
 
 
 routerTransferHistory.get('/:id',(req,res)=>{
     
     var jsonBusqueda={playerId : req.params.id};
 
-    findTransferHistory(jsonBusqueda).then((data)=>{
+    findTransferHistoryWithData(jsonBusqueda).then((data)=>{
         console.log('Historico transferencia de jguador obtenidos correctamente');
         var response = {
             success:true,
@@ -26,3 +25,5 @@ routerTransferHistory.get('/:id',(req,res)=>{
     });  
     
 });
+
+module.exports = routerTransferHistory;
