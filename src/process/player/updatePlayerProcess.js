@@ -78,6 +78,25 @@ function update(data){
                         process.exit();   
                     });
 
+                }else{
+
+                    //Componemos el objeto de transferencia ya que no habia ninguno antes
+                    var transferHistoryData ={
+                        playerId: data.id,
+                        teamId : data.team,
+                        startDate: getDateTime(),
+                        endDate:""
+                    };
+
+                    saveTransferHistory(transferHistoryData).then((responsetransfer) =>{
+
+                        process.send(responseBBDD);
+
+                    }).catch((err) =>{
+                        console.log('historico de transferencias no creado.',err);
+                        process.exit();   
+                    });
+
                 }
 
             }).catch((err) =>{
