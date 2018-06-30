@@ -40,7 +40,7 @@ function update(data){
 
     updatePlayer(data).then((responseBBDD) => {
         console.log('Jugador actualizado correctamente.');
-
+        
         if(null!=data.oldTeam && null!=data.team && ""!=data.oldTeam && ""!=data.team
           && data.team!=data.oldTeam){
             //existen los datos de equipo y son distintos
@@ -56,8 +56,6 @@ function update(data){
                         //Se ha actualizado la fecha, por tanto creamos un nuevo transfer con el equipo actual
                         //y la fecha fin sin informar.
 
-                        console.log('responseUpdateDate',responseUpdateDate);
-
                         //Componemos el objeto de transferencia
                         var transferHistoryData ={
                             playerId: data.id,
@@ -66,11 +64,7 @@ function update(data){
                             endDate:""
                         };
 
-                        console.log('transferHistoryData',transferHistoryData);
-
                         saveTransferHistory(transferHistoryData).then((responsetransfer) =>{
-
-                            console.log('historico de transferencia actualizado correctamente.');
 
                             process.send(responseBBDD);
 

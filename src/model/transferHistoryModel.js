@@ -29,9 +29,6 @@ exports.findTransferHistory = (jsonBusqueda) => {
 exports.updateEndDateTransferHistory = (jsonBusqueda, date) => {
 
     var newValue = {$set: {endDate:date}};
-
-    console.log('newValue',newValue);
-
     return TransferHistory.findOneAndUpdate(jsonBusqueda,newValue);
 
 };
