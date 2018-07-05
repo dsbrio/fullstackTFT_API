@@ -29,7 +29,8 @@ routerNews.post('/',(req,res)=>{
             addNewsProcess.on('message', (responseUpdateBBDD) => {
                 //Respondemos con OK
                 var response = {
-                    success:true
+                    success:true,
+                    newsId:responseUpdateBBDD._id
                 };
                 res.status(201).json(response);
             });
