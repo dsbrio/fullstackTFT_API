@@ -19,7 +19,8 @@ process.on('message', (data) => {
         function(error, result) {
             if(error){
                 console.log('equipo no actualizdo correctamente: fallo al subir escudo a la nube');   
-                process.exit();
+                data.shield = "";
+                update(data);
             }else{
                 
                 //en BD guardamos no el escudo en base64, sino la url que nos devuelve cloudinary

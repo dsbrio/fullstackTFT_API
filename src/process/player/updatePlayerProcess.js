@@ -22,7 +22,9 @@ process.on('message', (data) => {
         function(error, result) {
             if(error){
                 console.log('equipo no actualizdo correctamente: fallo al subir foto a la nube');   
-                process.exit();
+                data.photo = "";
+                update(data);
+
             }else{
                 
                 //en BD guardamos no la imagen en base64, sino la url que nos devuelve cloudinary
