@@ -82,10 +82,7 @@ exports.updatePlayer = (data) =>{
 
     let jsonBusqueda= {_id:data.id};
 
-    var newvalues ={$set: {name: data.name, secondname:data.secondname, nationality:data.nationality, 
-        colors: data.colors, team:data.team, characteristics:data.characteristics} };
-
-   return Player.findOneAndUpdate(jsonBusqueda,newvalues);
+   return Player.findOneAndUpdate(jsonBusqueda,data);
 
 };
 
