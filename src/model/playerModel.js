@@ -27,8 +27,8 @@ const PlayerSchema = mongoose.Schema({
         titles: Number,
         teamsPlayed: [String]
     },
-    strengths:[String],
-    weaknesses:[String],
+    strengths:String,
+    weaknesses:String,
     comments: String
 });
 

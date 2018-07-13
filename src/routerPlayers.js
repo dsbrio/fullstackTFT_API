@@ -12,7 +12,7 @@ const {validarToken} = require('./utileria/login.js');
 const {getTeamNameById} = require('./model/teamModel.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {getPlayerById, getAllPlayers,getAllPlayersByTeamId} = require('./model/playerModel.js');
+const {getPlayerById, getAllPlayers,getAllPlayersByTeamId, deleteAll} = require('./model/playerModel.js');
 
 const routerPlayers = express.Router();
 
@@ -193,6 +193,28 @@ routerPlayers.delete('/:id', (req, res)=>{
         });
 
         deletePlayerProcess.send(data); 
+    });
+    
+});
+
+
+//eliminación de jugadores
+routerPlayers.delete('/', (req, res)=>{
+    
+    validarToken(req.headers['authorization'], function(tokenValido){
+    
+        deleteAll().then((data)=>{
+
+            var response = {
+                success:true
+            };
+            res.status(200).json(response);
+
+        }).catch((err) => {
+            console.log('Error borrando jugadores');
+            console.log(err);
+            res.status(500).json({success:false});
+        });  
     });
     
 });
