@@ -220,6 +220,25 @@ routerPlayers.delete('/', (req, res)=>{
 });
 
 
+//obtención de jugadores sin equipo.
+routerPlayers.get('/team/none',(req,res)=>{
+    
+    getAllPlayersByTeamId(null).then((data)=>{
+        console.log('Jugadores obtenidos correctamente');
+        var response = {
+            success:true,
+            data:data
+        };
+        res.status(200).json(response);
+
+    }).catch((err) => {
+        console.log('Error obteniendo jugadores');
+        console.log(err);
+        res.status(500).json({success:false});
+    });  
+    
+});
+
 //obtención de jugadores asociados a un equipo, pasandole el id del equipo.
 routerPlayers.get('/team/:id',(req,res)=>{
     
@@ -238,5 +257,6 @@ routerPlayers.get('/team/:id',(req,res)=>{
     });  
     
 });
+
 
 module.exports = routerPlayers;
