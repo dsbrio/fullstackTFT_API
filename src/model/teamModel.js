@@ -47,21 +47,6 @@ exports.getTeamById = (teamId)=>{
     return listTeams;
 };
 
-//obtiene el nombre del equipo por su id.
-exports.getTeamNameById = (teamId)=>{
-
-    //formamos el json con el cual realizar la búsqueda.
-    let jsonBusqueda= {_id:teamId};
-
-    //formamos el json con el cual realizar la búsqueda.
-    let proyection= "name";
-
-    //obtenemos el listado de equipos por busqueda, en este caso solo saldra uno.
-    let listTeams = Team.findOne(jsonBusqueda, proyection).exec();
-
-    return listTeams;
-};
-
 //Actualiza el modelo en base de datos
 exports.updateTeam = (data) =>{
 

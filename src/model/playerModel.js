@@ -24,8 +24,7 @@ const PlayerSchema = mongoose.Schema({
     photo: String,
     statistics:{
         goals: Number,
-        titles: Number,
-        teamsPlayed: [String]
+        titles: Number
     },
     strengths:String,
     weaknesses:String,
@@ -70,9 +69,9 @@ exports.getPlayerById = (playerId)=>{
 
     //formamos el json con el cual realizar la búsqueda.
     let jsonBusqueda= {_id:playerId};
-
+    
     //obtenemos el listado de equipos por busqueda, en este caso solo saldra uno.
-    let listPlayers = Player.find(jsonBusqueda).exec();
+    let listPlayers = Player.find(jsonBusqueda).populate('team', 'name').exec();
 
     return listPlayers;
 };
