@@ -137,7 +137,7 @@ routerTeams.patch('/:id', (req, res)=>{
     });
 });
 
-//eliminación de equipo sin proceso hijo.
+//eliminación de equipo con proceso hijo.
 routerTeams.delete('/:id', (req, res)=>{
     validarToken(req.headers['authorization'], function(tokenValido){
 
@@ -160,7 +160,7 @@ routerTeams.delete('/:id', (req, res)=>{
 
         deleteTeamProcess.on('exit', () => {
             //Respondemos con OK
-            res.status(500).json({  success:false,error:'Error actualizando usuario.'});
+            res.status(500).json({  success:false,error:'Error borrando equipo.'});
         
         });
 
