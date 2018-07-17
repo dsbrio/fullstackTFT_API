@@ -5,7 +5,7 @@ const { fork } = require('child_process');
 const {validarToken} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {getAllNews,getNewsAfterDate, deleteAllNews} = require('./model/newsModel.js');
+const {getAllNews,getNewsById,getNewsAfterDate, deleteAllNews} = require('./model/newsModel.js');
 
 const addNewsProcessUrl = 'src/process/news/addNewsProcess.js';
 const updateNewsProcessUrl = 'src/process/news/updateNewsProcess.js';
@@ -71,6 +71,26 @@ routerNews.get('/',(req,res)=>{
         res.status(500).json({success:false});
     });  
     
+});
+
+
+//busqueda de equipo por id sin proceso hijo
+routerNews.get('/:id', (req, res)=>{
+
+    getNewsById(req.params.id).then((news)=>{
+        console.log('Noticia obtenida correctamente.');
+
+        var response = {
+            success:true,
+            data:news
+        }
+        res.status(200).json(response);
+
+    }).catch((err) => {
+        console.log('Error obteniendo noticia');
+        console.log(err);
+        res.status(500).json({success:false});
+    });
 });
 
 //obtención de noticias posteriores a cierta fecha

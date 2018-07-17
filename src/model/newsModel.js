@@ -47,6 +47,15 @@ exports.getAllNews = ()=>{
     return listNews;
 };
 
+//obtiene el equipo por su id.
+exports.getNewsById = (newsId)=>{
+
+    let jsonBusqueda= {_id:newsId};
+    let listNews = News.findOne(jsonBusqueda).exec();
+
+    return listNews;
+};
+
 //obtienen el listado de todos los jugadores pertenecientes a un equipo.
 exports.getNewsAfterDate = (dateFrom)=>{
 
