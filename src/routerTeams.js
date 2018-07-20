@@ -16,6 +16,53 @@ const {getPlayersByTeamId} = require('./model/playerModel.js');
 
 const routerTeams = express.Router();
 
+var  multer   = require ('multer') 
+var  upload  = multer () 
+var fs = require('fs');
+
+routerTeams.post('/', upload.single('avatar'), (req, res) => {
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+        if(tokenValido){
+
+            //obtenemos el campo body de la petición
+            let data = req.body;
+
+            data.shield = new Buffer(req.file.buffer, 'binary').toString('base64');
+
+            //Obtenemos el proceso hijo
+            const addTeamProcess = fork(addTeamProcessUrl);
+
+            //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+            addTeamProcess.on('message', (responseBBDD) => {
+
+                var response ={
+                    success:true,
+                    data : responseBBDD
+                };
+                res.status(201).json(response);
+            });
+
+            addTeamProcess.on('exit', () => {
+                //Respondemos con OK
+                res.status(500).json({ success:false, error:'Error creando equipo.'});
+            
+            });
+
+            //ejecutamos el proceso.
+            addTeamProcess.send(data);
+
+        }else{
+            //token no valido, 401
+            res.status(401).json({success:false, message:"No autorizado."});
+        }
+    });
+
+})
+
 //creación del equipo con proceso hijo.
 routerTeams.post('/',(req,res)=>{
 
