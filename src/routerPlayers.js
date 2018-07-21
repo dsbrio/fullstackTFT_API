@@ -20,6 +20,9 @@ var  upload  = multer ()
 //creación del jugador con proceso hijo.
 routerPlayers.post('/', upload.single('photo'), (req,res)=>{
 
+    console.log('req.file', req.file);
+    console.log('req.body', req.body);
+
     validarToken(req.headers['authorization'], function(tokenValido){
 
         console.log('tokenValido',tokenValido);
@@ -116,6 +119,9 @@ routerPlayers.get('/:id',(req,res)=>{
 //edición del jugador con proceso hijo.
 routerPlayers.patch('/:id', upload.single('photo'), (req,res)=>{
 
+    console.log('req.file', req.file);
+    console.log('req.body', req.body);
+    
     validarToken(req.headers['authorization'], function(tokenValido){
 
         if(tokenValido){

@@ -24,9 +24,6 @@ routerTeams.post('/', upload.single('shield'), (req, res) => {
     // req.file is the `photo` file
     // req.body will hold the text fields, if there were any
 
-    console.log('req.file', req.file);
-    console.log('req.body', req.body);
-
     validarToken(req.headers['authorization'], function(tokenValido){
 
         if(tokenValido){
@@ -120,6 +117,9 @@ routerTeams.get('/:id', (req, res)=>{
 //actualización de equipo con proceso hijo.
 routerTeams.patch('/:id', upload.single('shield'), (req, res)=>{
    
+    console.log('req.file', req.file);
+    console.log('req.body', req.body);
+    
     validarToken(req.headers['authorization'], function(tokenValido){
 
         let data = req.body;
