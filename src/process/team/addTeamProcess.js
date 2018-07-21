@@ -16,7 +16,8 @@ process.on('message', (data) => {
     cloudinary.v2.uploader.upload("data:image/png;base64,"+ data.shield, 
     function(error, result) {
         if(error){
-            console.log('fallo al subir escudo a la nube');   
+            console.log('fallo al subir escudo a la nube'); 
+            console.log(error);  
 
             data.shield = "";
 
@@ -41,7 +42,8 @@ function saveTeamData(data) {
         process.send(responseBBDD);
      })
      .catch((err) =>{
-         console.log('equipo no creado correctamente.');   
+         console.log('equipo no creado correctamente.');  
+         console.log(err);  
          process.exit();
      });
 }

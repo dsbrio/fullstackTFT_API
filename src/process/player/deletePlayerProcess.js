@@ -8,7 +8,7 @@ process.on('message', (data) => {
 		console.log('Jugador eliminado correctamente.');
 		process.send(data);
 	 })
-	 .catch(() =>{
+	 .catch((err) =>{
 		 console.log('Jugador no eliminado correctamente.');   
 	 	console.log(err);   
 	 	process.exit();

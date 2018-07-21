@@ -13,14 +13,14 @@ process.on('message', (data) => {
 			console.log('equipo eliminado correctamente.');
 			process.send(data);
 		 })
-		 .catch(() =>{
+		 .catch((err) =>{
 			 console.log('equipo no eliminado correctamente.');   
 		 console.log(err);   
 		 process.exit();
 		 });
 
 	 })
-	 .catch(() =>{
+	 .catch((err) =>{
 		 console.log('equipo no eliminado correctamente.');   
 	 console.log(err);   
 	 process.exit();

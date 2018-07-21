@@ -20,7 +20,7 @@ process.on('message', (data) => {
 
         function(error, result) {
             if(error){
-                console.log('jugador : fallo al subir foto a la nube');   
+                console.log('jugador : fallo al subir foto a la nube', error);   
                 
                 data.photo ="";
 
@@ -45,12 +45,8 @@ process.on('message', (data) => {
 
 function savePlayerData(data) {
 
-    console.log('savePlayerData');
-
     savePlayer(data).then((responseBBDD) => {
            
-        console.log('savePlayerData ok');
-
         //Componemos el objeto de transferencia
         var transferHistoryData ={
             playerId: responseBBDD._id,
@@ -60,27 +56,19 @@ function savePlayerData(data) {
         };
 
         saveTransferHistory(transferHistoryData).then((responsetransfer) =>{
-
-            console.log('saveTransferHistory OK');
-
             console.log('jugador creado correctamente.');
 
             process.send(responseBBDD);
 
         }).catch((err) =>{
 
-            console.log('saveTransferHistory KO', err);
-
-            console.log('historico de transferencias no creado.'); 
+            console.log('historico de transferencias no creado.', err); 
             process.exit();     
         });
 
     })
     .catch((err) =>{
-
-        console.log('savePlayerData KO', err);
-
-        console.log('jugador no creado correctamente.');   
+        console.log('jugador no creado correctamente.', err);   
         process.exit();
     });
 }
