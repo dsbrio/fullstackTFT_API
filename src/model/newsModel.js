@@ -47,6 +47,15 @@ exports.getAllNews = ()=>{
     return listNews;
 };
 
+//obtiene el equipo por su id.
+exports.getNewsById = (newsId)=>{
+
+    let jsonBusqueda= {_id:newsId};
+    let listNews = News.findOne(jsonBusqueda).exec();
+
+    return listNews;
+};
+
 //obtienen el listado de todos los jugadores pertenecientes a un equipo.
 exports.getNewsAfterDate = (dateFrom)=>{
 
@@ -58,6 +67,20 @@ exports.getNewsAfterDate = (dateFrom)=>{
     return listNews;
 };
 
+//Actualiza el modelo en base de datos
+exports.updateNews = (data) =>{
+
+    let jsonBusqueda= {_id:data.id};
+
+   return News.findOneAndUpdate(jsonBusqueda,data);
+
+};
+
+//Borrado por id.
+exports.deleteNews = (data) =>{
+    let jsonBusqueda= {_id:data.id};
+    return News.remove(jsonBusqueda);
+};
 
 //obtienen el listado de todos los jugadores pertenecientes a un equipo.
 exports.deleteAllNews = ()=>{

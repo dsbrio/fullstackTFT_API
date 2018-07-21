@@ -9,10 +9,7 @@ const updatePlayerProcessUrl = 'src/process/player/updatePlayerProcess.js';
 const {validarToken} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {getTeamNameById} = require('./model/teamModel.js');
-
-//importamos solo las funciones del modelo que vamos a usar desde el router.
-const {getPlayerById, getAllPlayers,getAllPlayersByTeamId} = require('./model/playerModel.js');
+const {getPlayerById, getAllPlayers,getAllPlayersByTeamId, deleteAll} = require('./model/playerModel.js');
 
 const routerPlayers = express.Router();
 
@@ -93,29 +90,13 @@ routerPlayers.get('/:id',(req,res)=>{
         if(null!=data && data.length==1){
             playerInfo=data[0];
         }
+
+        var response = {
+            success:true,
+            data:playerInfo
+        };
+        res.status(200).json(response);
         
-        getTeamNameById(playerInfo.team).then((data)=>{
-
-            let player = playerInfo.toObject();
-
-            if(data != null){
-                player.teamName = data.name;
-            }else{
-                player.teamName = "";
-            }
-            
-            
-            var response = {
-                success:true,
-                data:player
-            };
-            res.status(200).json(response);
-
-        }).catch((err) => {
-            console.log('Error obteniendo jugador');
-            console.log(err);
-            res.status(500).json({success:false});
-        });  
     }).catch((err) => {
         console.log('Error obteniendo jugador');
         console.log(err);
@@ -198,6 +179,47 @@ routerPlayers.delete('/:id', (req, res)=>{
 });
 
 
+//eliminación de jugadores
+routerPlayers.delete('/', (req, res)=>{
+    
+    validarToken(req.headers['authorization'], function(tokenValido){
+    
+        deleteAll().then((data)=>{
+
+            var response = {
+                success:true
+            };
+            res.status(200).json(response);
+
+        }).catch((err) => {
+            console.log('Error borrando jugadores');
+            console.log(err);
+            res.status(500).json({success:false});
+        });  
+    });
+    
+});
+
+
+//obtención de jugadores sin equipo.
+routerPlayers.get('/team/none',(req,res)=>{
+    
+    getAllPlayersByTeamId(null).then((data)=>{
+        console.log('Jugadores obtenidos correctamente');
+        var response = {
+            success:true,
+            data:data
+        };
+        res.status(200).json(response);
+
+    }).catch((err) => {
+        console.log('Error obteniendo jugadores');
+        console.log(err);
+        res.status(500).json({success:false});
+    });  
+    
+});
+
 //obtención de jugadores asociados a un equipo, pasandole el id del equipo.
 routerPlayers.get('/team/:id',(req,res)=>{
     
@@ -216,5 +238,6 @@ routerPlayers.get('/team/:id',(req,res)=>{
     });  
     
 });
+
 
 module.exports = routerPlayers;

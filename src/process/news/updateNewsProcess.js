@@ -1,5 +1,5 @@
 //importamos el modelo de equipo para poder relacionarnos con la base de datos.
-const {updateTeam} = require ('../../model/teamModel.js');
+const {updateNews} = require ('../../model/newsModel.js');
 
 var cloudinary = require('cloudinary');
 
@@ -12,19 +12,19 @@ cloudinary.config({
 //El proceso hijo de actualización realizará la actualización en base de datos del equipo.
 process.on('message', (data) => {
 
-    if(data.shield != null){
-        console.log('actualizando escudo');
+    if(data.photo != null){
+        console.log('actualizando foto de la noticia');
 
-        cloudinary.v2.uploader.upload("data:image/png;base64,"+ data.shield, 
+        cloudinary.v2.uploader.upload("data:image/png;base64,"+ data.photo, 
         function(error, result) {
             if(error){
-                console.log('equipo no actualizdo correctamente: fallo al subir escudo a la nube');   
-                data.shield = "";
+                console.log('noticia no actualizada correctamente: fallo al subir foto a la nube');   
+                data.photo = "";
                 update(data);
             }else{
                 
                 //en BD guardamos no el escudo en base64, sino la url que nos devuelve cloudinary
-                data.shield = result.url;
+                data.photo = result.url;
                 update(data);
 
             }
@@ -36,12 +36,12 @@ process.on('message', (data) => {
 
 function update(data){
 
-    updateTeam(data).then((responseBBDD) => {
-        console.log('Equipo actualizado correctamente.');
+    updateNews(data).then((responseBBDD) => {
+        console.log('Noticia actualizada correctamente.');
         process.send(data);
      })
      .catch((err) =>{
-         console.log('equipo no actualizado correctamente.');   
+         console.log('Noticia no actualizada correctamente.');   
          console.log(err);   
          process.exit();
      });

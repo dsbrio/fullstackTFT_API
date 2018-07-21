@@ -24,11 +24,10 @@ const PlayerSchema = mongoose.Schema({
     photo: String,
     statistics:{
         goals: Number,
-        titles: Number,
-        teamsPlayed: [String]
+        titles: Number
     },
-    strengths:[String],
-    weaknesses:[String],
+    strengths:String,
+    weaknesses:String,
     comments: String
 });
 
@@ -70,9 +69,9 @@ exports.getPlayerById = (playerId)=>{
 
     //formamos el json con el cual realizar la búsqueda.
     let jsonBusqueda= {_id:playerId};
-
+    
     //obtenemos el listado de equipos por busqueda, en este caso solo saldra uno.
-    let listPlayers = Player.find(jsonBusqueda).exec();
+    let listPlayers = Player.find(jsonBusqueda).populate('team', 'name').exec();
 
     return listPlayers;
 };
@@ -82,10 +81,7 @@ exports.updatePlayer = (data) =>{
 
     let jsonBusqueda= {_id:data.id};
 
-    var newvalues ={$set: {name: data.name, secondname:data.secondname, nationality:data.nationality, 
-        colors: data.colors, team:data.team, characteristics:data.characteristics} };
-
-   return Player.findOneAndUpdate(jsonBusqueda,newvalues);
+   return Player.findOneAndUpdate(jsonBusqueda,data);
 
 };
 

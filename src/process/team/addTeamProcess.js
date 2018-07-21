@@ -16,26 +16,33 @@ process.on('message', (data) => {
     cloudinary.v2.uploader.upload("data:image/png;base64,"+ data.shield, 
     function(error, result) {
         if(error){
-            console.log('equipo no creado correctamente: fallo al subir escudo a la nube');   
-            process.exit();
+            console.log('fallo al subir escudo a la nube');   
+
+            data.shield = "";
+
+            saveTeamData(data);
         }else{
             console.log("escudo del equipo subido a la nube");
 
             //en BD guardamos no el escudo en base64, sino la url que nos devuelve cloudinary
             data.shield = result.url;
 
-            saveTeam(data).then((responseBBDD) => {
-                console.log('equipo creado correctamente.');
-                process.send(responseBBDD);
-             })
-             .catch((err) =>{
-                 console.log('equipo no creado correctamente.');   
-                 process.exit();
-             });
+            saveTeamData(data);
         }
         
     });
 
 
 });
+
+function saveTeamData(data) {
+    saveTeam(data).then((responseBBDD) => {
+        console.log('equipo creado correctamente.');
+        process.send(responseBBDD);
+     })
+     .catch((err) =>{
+         console.log('equipo no creado correctamente.');   
+         process.exit();
+     });
+}
 

@@ -5,9 +5,11 @@ const { fork } = require('child_process');
 const {validarToken} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {saveNews, getAllNews,getNewsAfterDate, deleteAllNews} = require('./model/newsModel.js');
+const {getAllNews,getNewsById,getNewsAfterDate, deleteAllNews} = require('./model/newsModel.js');
 
 const addNewsProcessUrl = 'src/process/news/addNewsProcess.js';
+const updateNewsProcessUrl = 'src/process/news/updateNewsProcess.js';
+const deleteNewsProcessUrl = 'src/process/news/deleteNewsProcess.js';
 
 const routerNews = express.Router();
 
@@ -29,7 +31,8 @@ routerNews.post('/',(req,res)=>{
             addNewsProcess.on('message', (responseUpdateBBDD) => {
                 //Respondemos con OK
                 var response = {
-                    success:true
+                    success:true,
+                    newsId:responseUpdateBBDD._id
                 };
                 res.status(201).json(response);
             });
@@ -68,6 +71,26 @@ routerNews.get('/',(req,res)=>{
         res.status(500).json({success:false});
     });  
     
+});
+
+
+//busqueda de equipo por id sin proceso hijo
+routerNews.get('/:id', (req, res)=>{
+
+    getNewsById(req.params.id).then((news)=>{
+        console.log('Noticia obtenida correctamente.');
+
+        var response = {
+            success:true,
+            data:news
+        }
+        res.status(200).json(response);
+
+    }).catch((err) => {
+        console.log('Error obteniendo noticia');
+        console.log(err);
+        res.status(500).json({success:false});
+    });
 });
 
 //obtención de noticias posteriores a cierta fecha
@@ -121,5 +144,71 @@ routerNews.delete('/', (req, res)=>{
     });
     
 });
+
+
+//actualización de noticia  con proceso hijo.
+routerNews.patch('/:id', (req, res)=>{
+   
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+        let data = req.body;
+        data.id = req.params.id;
+
+        //realizamos llamada al proceso hijo.
+        const updateNewsProcess = fork(updateNewsProcessUrl);
+    
+        //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+        updateNewsProcess.on('message', (responseUpdateBBDD) => {
+            //Respondemos con OK
+            var response = {
+                success:true,
+                data:responseUpdateBBDD
+            };
+            res.status(201).json(response);
+        });
+
+        updateNewsProcess.on('exit', () => {
+            //Respondemos con OK
+            res.status(500).json({success:false,error:'Error actualizando equipo.'});
+        
+        });
+
+        updateNewsProcess.send(data);   
+    });
+});
+
+
+//eliminación de noticia con proceso hijo.
+routerNews.delete('/:id', (req, res)=>{
+    validarToken(req.headers['authorization'], function(tokenValido){
+
+        let data = {
+            id : req.params.id
+        }
+    
+        //realizamos llamada al proceso hijo.
+        const deleteNewsProcess = fork(deleteNewsProcessUrl);
+    
+        //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
+        deleteNewsProcess.on('message', (responseUpdateBBDD) => {
+            //Respondemos con OK
+            var response = {
+                success:true,
+                data:responseUpdateBBDD
+            };
+            res.status(201).json(response);
+        });
+
+        deleteNewsProcess.on('exit', () => {
+            //Respondemos con OK
+            res.status(500).json({  success:false,error:'Error borrando noticia.'});
+        
+        });
+
+        deleteNewsProcess.send(data); 
+    });
+    
+});
+
 
 module.exports = routerNews;
