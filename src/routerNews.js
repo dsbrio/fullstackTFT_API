@@ -13,9 +13,11 @@ const deleteNewsProcessUrl = 'src/process/news/deleteNewsProcess.js';
 
 const routerNews = express.Router();
 
+var  multer   = require ('multer') 
+var  upload  = multer () 
 
 //creación del noticia con proceso hijo.
-routerNews.post('/',(req,res)=>{
+routerNews.post('/', upload.single('photo'), (req,res)=>{
 
     validarToken(req.headers['authorization'], function(tokenValido){
 
@@ -23,6 +25,10 @@ routerNews.post('/',(req,res)=>{
 
         if(tokenValido){
             let data = req.body;
+
+            if(req.file != undefined){
+                data.photo = new Buffer(req.file.buffer, 'binary').toString('base64');
+            }
 
             //realizamos llamada al proceso hijo.
             const addNewsProcess = fork(addNewsProcessUrl);
@@ -147,12 +153,16 @@ routerNews.delete('/', (req, res)=>{
 
 
 //actualización de noticia  con proceso hijo.
-routerNews.patch('/:id', (req, res)=>{
+routerNews.patch('/:id', upload.single('photo'), (req, res)=>{
    
     validarToken(req.headers['authorization'], function(tokenValido){
 
         let data = req.body;
         data.id = req.params.id;
+
+        if(req.file != undefined){
+            data.photo = new Buffer(req.file.buffer, 'binary').toString('base64');
+        }
 
         //realizamos llamada al proceso hijo.
         const updateNewsProcess = fork(updateNewsProcessUrl);

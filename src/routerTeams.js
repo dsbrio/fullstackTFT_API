@@ -33,8 +33,6 @@ routerTeams.post('/', upload.single('shield'), (req, res) => {
 
             if(req.file != undefined){
                 data.shield = new Buffer(req.file.buffer, 'binary').toString('base64');
-            }else{
-                data.shield = "";
             }
             
             //Obtenemos el proceso hijo
@@ -66,47 +64,6 @@ routerTeams.post('/', upload.single('shield'), (req, res) => {
     });
 
 })
-
-//creación del equipo con proceso hijo.
-routerTeams.post('/',(req,res)=>{
-
-    validarToken(req.headers['authorization'], function(tokenValido){
-
-        if(tokenValido){
-
-            //obtenemos el campo body de la petición
-            let data = req.body;
-
-            //Obtenemos el proceso hijo
-            const addTeamProcess = fork(addTeamProcessUrl);
-
-            //añadimos un evento al proceso hijo, para que envie los datos del json de respuesta.
-            addTeamProcess.on('message', (responseBBDD) => {
-
-                var response ={
-                    success:true,
-                    data : responseBBDD
-                };
-                res.status(201).json(response);
-            });
-
-            addTeamProcess.on('exit', () => {
-                //Respondemos con OK
-                res.status(500).json({ success:false, error:'Error creando equipo.'});
-            
-            });
-
-            //ejecutamos el proceso.
-            addTeamProcess.send(data);
-
-        }else{
-            //token no valido, 401
-            res.status(401).json({success:false, message:"No autorizado."});
-        }
-    });
-
-});
-
 
 //listado de equipo sin proceso hijo
 routerTeams.get('/', (req, res)=>{
@@ -158,12 +115,16 @@ routerTeams.get('/:id', (req, res)=>{
 
 
 //actualización de equipo con proceso hijo.
-routerTeams.patch('/:id', (req, res)=>{
+routerTeams.patch('/:id', upload.single('shield'), (req, res)=>{
    
     validarToken(req.headers['authorization'], function(tokenValido){
 
         let data = req.body;
         data.id = req.params.id;
+
+        if(req.file != undefined){
+            data.shield = new Buffer(req.file.buffer, 'binary').toString('base64');
+        }
 
         //realizamos llamada al proceso hijo.
         const updateTeamProcess = fork(updateTeamProcessUrl);
