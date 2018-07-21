@@ -20,7 +20,7 @@ const PlayerSchema = mongoose.Schema({
     },
     nationality: String,
     position: String,
-    team: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
+    team: { type: Schema.Types.ObjectId, ref: 'Team', default: null },
     photo: String,
     statistics:{
         goals: Number,
