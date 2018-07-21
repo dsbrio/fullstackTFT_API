@@ -16,6 +16,7 @@ process.on('message', (data) => {
     function(error, result) {
         if(error){
             console.log('noticia : fallo al subir foto a la nube');  
+            console.log(error);
             data.photo = "";
 
             saveNewsData(data);
@@ -41,6 +42,7 @@ function saveNewsData(data) {
      })
      .catch((err) =>{
          console.log('noticia no creada correctamente.');   
+         console.log(err);
          process.exit();
      });
 }

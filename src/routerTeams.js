@@ -117,6 +117,9 @@ routerTeams.get('/:id', (req, res)=>{
 //actualización de equipo con proceso hijo.
 routerTeams.patch('/:id', upload.single('shield'), (req, res)=>{
    
+    console.log('req.file', req.file);
+    console.log('req.body', req.body);
+    
     validarToken(req.headers['authorization'], function(tokenValido){
 
         let data = req.body;

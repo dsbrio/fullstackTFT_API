@@ -18,7 +18,8 @@ process.on('message', (data) => {
         cloudinary.v2.uploader.upload("data:image/png;base64,"+ data.shield, 
         function(error, result) {
             if(error){
-                console.log('equipo no actualizdo correctamente: fallo al subir escudo a la nube');   
+                console.log('equipo no actualizdo correctamente: fallo al subir escudo a la nube');
+                console.log(error);     
                 data.shield = "";
                 update(data);
             }else{

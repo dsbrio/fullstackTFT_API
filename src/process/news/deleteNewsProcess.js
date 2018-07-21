@@ -8,7 +8,7 @@ process.on('message', (data) => {
 		console.log('Noticia eliminada correctamente.');
 		process.send(data);
 	 })
-	 .catch(() =>{
+	 .catch((err) =>{
 		 console.log('Noticia no eliminada correctamente.');   
 	 	console.log(err);   
 	 	process.exit();
