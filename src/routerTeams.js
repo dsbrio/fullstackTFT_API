@@ -24,6 +24,9 @@ routerTeams.post('/', upload.single('shield'), (req, res) => {
     // req.file is the `photo` file
     // req.body will hold the text fields, if there were any
 
+    console.log('req.file', req.file);
+    console.log('req.body', req.body);
+
     validarToken(req.headers['authorization'], function(tokenValido){
 
         if(tokenValido){
