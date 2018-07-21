@@ -20,8 +20,8 @@ var  multer   = require ('multer')
 var  upload  = multer () 
 var fs = require('fs');
 
-routerTeams.post('/', upload.single('avatar'), (req, res) => {
-    // req.file is the `avatar` file
+routerTeams.post('/', upload.single('shield'), (req, res) => {
+    // req.file is the `photo` file
     // req.body will hold the text fields, if there were any
 
     validarToken(req.headers['authorization'], function(tokenValido){
@@ -31,8 +31,12 @@ routerTeams.post('/', upload.single('avatar'), (req, res) => {
             //obtenemos el campo body de la petición
             let data = req.body;
 
-            data.shield = new Buffer(req.file.buffer, 'binary').toString('base64');
-
+            if(req.file != undefined){
+                data.shield = new Buffer(req.file.buffer, 'binary').toString('base64');
+            }else{
+                data.shield = "";
+            }
+            
             //Obtenemos el proceso hijo
             const addTeamProcess = fork(addTeamProcessUrl);
 
