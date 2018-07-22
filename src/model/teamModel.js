@@ -9,15 +9,15 @@ mongoose.Promise = global.Promise;
 
 const TeamSchema = mongoose.Schema({
     id : String,
-    name :String,
-	shield: String,
-    stadium : String,
+    name :{type:String, default:""},
+	shield: {type:String, default:""},
+    stadium : {type:String, default:""},
     history: {
-        goals: Number,
-		titles: Number
+        goals: {type:Number, default:0},
+		titles: {type:Number, default:0}
     },
-    coach: String,
-    president: String
+    coach: {type:String, default:""},
+    president: {type:String, default:""}
 });
 
 
