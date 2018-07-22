@@ -43,7 +43,7 @@ routerTeams.post('/', upload.single('shield'), (req, res) => {
 
                 var response ={
                     success:true,
-                    data : responseBBDD
+                    data : responseBBDD._id
                 };
                 res.status(201).json(response);
             });
@@ -136,8 +136,7 @@ routerTeams.patch('/:id', upload.single('shield'), (req, res)=>{
         updateTeamProcess.on('message', (responseUpdateBBDD) => {
             //Respondemos con OK
             var response = {
-                success:true,
-                data:responseUpdateBBDD
+                success:true
             };
             res.status(201).json(response);
         });
