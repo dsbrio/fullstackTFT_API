@@ -17,13 +17,13 @@ cloudinary.config({
 
 const NewsSchema = mongoose.Schema({
     id: String,
-    title: String,
-    photo: String,
-    subtitle: String,
-    reporter: String,
-    date: Date,
-    text: String,
-    link: String
+    title: {type:String, default:""},
+    photo: {type:String, default:""},
+    subtitle: {type:String, default:""},
+    reporter: {type:String, default:""},
+    date: {type:Date, default:new Date()},
+    text: {type:String, default:""},
+    link: {type:String, default:""}
 });
 
 
@@ -47,6 +47,15 @@ exports.getAllNews = ()=>{
     return listNews;
 };
 
+//obtiene el equipo por su id.
+exports.getNewsById = (newsId)=>{
+
+    let jsonBusqueda= {_id:newsId};
+    let listNews = News.findOne(jsonBusqueda).exec();
+
+    return listNews;
+};
+
 //obtienen el listado de todos los jugadores pertenecientes a un equipo.
 exports.getNewsAfterDate = (dateFrom)=>{
 
@@ -58,6 +67,20 @@ exports.getNewsAfterDate = (dateFrom)=>{
     return listNews;
 };
 
+//Actualiza el modelo en base de datos
+exports.updateNews = (data) =>{
+
+    let jsonBusqueda= {_id:data.id};
+
+   return News.findOneAndUpdate(jsonBusqueda,data);
+
+};
+
+//Borrado por id.
+exports.deleteNews = (data) =>{
+    let jsonBusqueda= {_id:data.id};
+    return News.remove(jsonBusqueda);
+};
 
 //obtienen el listado de todos los jugadores pertenecientes a un equipo.
 exports.deleteAllNews = ()=>{

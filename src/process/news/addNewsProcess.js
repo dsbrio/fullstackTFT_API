@@ -15,26 +15,34 @@ process.on('message', (data) => {
     cloudinary.v2.uploader.upload("data:image/png;base64,"+ data.photo, 
     function(error, result) {
         if(error){
-            console.log('noticia no creada correctamente: fallo al subir foto a la nube');   
-            process.exit();
+            console.log('noticia : fallo al subir foto a la nube');  
+            console.log(error);
+            data.photo = "";
+
+            saveNewsData(data);
         }else{
             console.log("foto de noticia subido a la nube");
 
             //en BD guardamos no la foto en base64, sino la url que nos devuelve cloudinary
             data.photo = result.url;
 
-            saveNews(data).then((responseBBDD) => {
-                console.log('noticia creada correctamente.');
-                process.send(responseBBDD);
-             })
-             .catch((err) =>{
-                 console.log('noticia no creada correctamente.');   
-                 process.exit();
-             });
+           saveNewsData(data);
         }
         
     });
 
-
 });
 
+
+
+function saveNewsData(data) {
+    saveNews(data).then((responseBBDD) => {
+        console.log('noticia creada correctamente.');
+        process.send(responseBBDD);
+     })
+     .catch((err) =>{
+         console.log('noticia no creada correctamente.');   
+         console.log(err);
+         process.exit();
+     });
+}

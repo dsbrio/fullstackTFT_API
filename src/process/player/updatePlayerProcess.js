@@ -22,7 +22,10 @@ process.on('message', (data) => {
         function(error, result) {
             if(error){
                 console.log('equipo no actualizdo correctamente: fallo al subir foto a la nube');   
-                process.exit();
+                console.log(error);
+                data.photo = "";
+                update(data);
+
             }else{
                 
                 //en BD guardamos no la imagen en base64, sino la url que nos devuelve cloudinary
@@ -69,12 +72,14 @@ function update(data){
                             process.send(responseBBDD);
 
                         }).catch((err) =>{
-                            console.log('historico de transferencias no creado.',err);
+                            console.log('historico de transferencias no creado.');
+                            console.log(err);
                             process.exit();   
                         });
 
                     }).catch((err) =>{
                         console.log('historico de transferencias no creado.');
+                        console.log(err);
                         process.exit();   
                     });
 
@@ -93,14 +98,16 @@ function update(data){
                         process.send(responseBBDD);
 
                     }).catch((err) =>{
-                        console.log('historico de transferencias no creado.',err);
+                        console.log('historico de transferencias no creado.');
+                        console.log(err);
                         process.exit();   
                     });
 
                 }
 
             }).catch((err) =>{
-                console.log('historico de transferencias no creado.',err);
+                console.log('historico de transferencias no creado.');
+                console.log(err);
                 process.exit();   
             });
 

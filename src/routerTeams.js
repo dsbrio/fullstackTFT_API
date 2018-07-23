@@ -16,8 +16,13 @@ const {getPlayersByTeamId} = require('./model/playerModel.js');
 
 const routerTeams = express.Router();
 
-//creación del equipo con proceso hijo.
-routerTeams.post('/',(req,res)=>{
+var  multer   = require ('multer') 
+var  upload  = multer () 
+var fs = require('fs');
+
+routerTeams.post('/', upload.single('shield'), (req, res) => {
+    // req.file is the `photo` file
+    // req.body will hold the text fields, if there were any
 
     validarToken(req.headers['authorization'], function(tokenValido){
 
@@ -26,6 +31,10 @@ routerTeams.post('/',(req,res)=>{
             //obtenemos el campo body de la petición
             let data = req.body;
 
+            if(req.file != undefined){
+                data.shield = new Buffer(req.file.buffer, 'binary').toString('base64');
+            }
+            
             //Obtenemos el proceso hijo
             const addTeamProcess = fork(addTeamProcessUrl);
 
@@ -34,7 +43,7 @@ routerTeams.post('/',(req,res)=>{
 
                 var response ={
                     success:true,
-                    data : responseBBDD
+                    data : responseBBDD._id
                 };
                 res.status(201).json(response);
             });
@@ -54,8 +63,7 @@ routerTeams.post('/',(req,res)=>{
         }
     });
 
-});
-
+})
 
 //listado de equipo sin proceso hijo
 routerTeams.get('/', (req, res)=>{
@@ -107,12 +115,19 @@ routerTeams.get('/:id', (req, res)=>{
 
 
 //actualización de equipo con proceso hijo.
-routerTeams.patch('/:id', (req, res)=>{
+routerTeams.patch('/:id', upload.single('shield'), (req, res)=>{
    
+    console.log('req.file', req.file);
+    console.log('req.body', req.body);
+    
     validarToken(req.headers['authorization'], function(tokenValido){
 
         let data = req.body;
         data.id = req.params.id;
+
+        if(req.file != undefined){
+            data.shield = new Buffer(req.file.buffer, 'binary').toString('base64');
+        }
 
         //realizamos llamada al proceso hijo.
         const updateTeamProcess = fork(updateTeamProcessUrl);
@@ -121,8 +136,7 @@ routerTeams.patch('/:id', (req, res)=>{
         updateTeamProcess.on('message', (responseUpdateBBDD) => {
             //Respondemos con OK
             var response = {
-                success:true,
-                data:responseUpdateBBDD
+                success:true
             };
             res.status(201).json(response);
         });
@@ -137,7 +151,7 @@ routerTeams.patch('/:id', (req, res)=>{
     });
 });
 
-//eliminación de equipo sin proceso hijo.
+//eliminación de equipo con proceso hijo.
 routerTeams.delete('/:id', (req, res)=>{
     validarToken(req.headers['authorization'], function(tokenValido){
 
@@ -160,7 +174,7 @@ routerTeams.delete('/:id', (req, res)=>{
 
         deleteTeamProcess.on('exit', () => {
             //Respondemos con OK
-            res.status(500).json({  success:false,error:'Error actualizando usuario.'});
+            res.status(500).json({  success:false,error:'Error borrando equipo.'});
         
         });
 

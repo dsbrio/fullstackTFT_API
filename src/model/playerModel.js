@@ -11,25 +11,24 @@ var Schema = mongoose.Schema;
 
 const PlayerSchema = mongoose.Schema({
     id: String,
-    name: String,
-    secondname: String,
+    name: {type:String, default:""},
+    secondname: {type:String, default:""},
     characteristics: {
-        age: Number,
-        weight: Number,
-        height: Number
+        age: {type:Number, default:0},
+        weight: {type:Number, default:0},
+        height: {type:Number, default:0}
     },
-    nationality: String,
-    position: String,
-    team: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
-    photo: String,
+    nationality: {type:String, default:""},
+    position: {type:String, default:""},
+    team: { type: Schema.Types.ObjectId, ref: 'Team', default: null },
+    photo: {type:String, default:""},
     statistics:{
-        goals: Number,
-        titles: Number,
-        teamsPlayed: [String]
+        goals: {type:Number, default:0},
+        titles: {type:Number, default:0}
     },
-    strengths:[String],
-    weaknesses:[String],
-    comments: String
+    strengths:{type:String, default:""},
+    weaknesses:{type:String, default:""},
+    comments: {type:String, default:""}
 });
 
 
@@ -70,9 +69,9 @@ exports.getPlayerById = (playerId)=>{
 
     //formamos el json con el cual realizar la búsqueda.
     let jsonBusqueda= {_id:playerId};
-
+    
     //obtenemos el listado de equipos por busqueda, en este caso solo saldra uno.
-    let listPlayers = Player.find(jsonBusqueda).exec();
+    let listPlayers = Player.find(jsonBusqueda).populate('team', 'name').exec();
 
     return listPlayers;
 };
@@ -82,10 +81,7 @@ exports.updatePlayer = (data) =>{
 
     let jsonBusqueda= {_id:data.id};
 
-    var newvalues ={$set: {name: data.name, secondname:data.secondname, nationality:data.nationality, 
-        colors: data.colors, team:data.team, characteristics:data.characteristics} };
-
-   return Player.findOneAndUpdate(jsonBusqueda,newvalues);
+   return Player.findOneAndUpdate(jsonBusqueda,data);
 
 };
 

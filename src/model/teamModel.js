@@ -9,15 +9,15 @@ mongoose.Promise = global.Promise;
 
 const TeamSchema = mongoose.Schema({
     id : String,
-    name :String,
-	shield: String,
-    stadium : String,
+    name :{type:String, default:""},
+	shield: {type:String, default:""},
+    stadium : {type:String, default:""},
     history: {
-        goals: Number,
-		titles: Number
+        goals: {type:Number, default:0},
+		titles: {type:Number, default:0}
     },
-    coach: String,
-    president: String
+    coach: {type:String, default:""},
+    president: {type:String, default:""}
 });
 
 
@@ -43,21 +43,6 @@ exports.getTeamById = (teamId)=>{
     let jsonBusqueda= {_id:teamId};
     //obtenemos el listado de equipos por busqueda, en este caso solo saldra uno.
     let listTeams = Team.findOne(jsonBusqueda).exec();
-
-    return listTeams;
-};
-
-//obtiene el nombre del equipo por su id.
-exports.getTeamNameById = (teamId)=>{
-
-    //formamos el json con el cual realizar la búsqueda.
-    let jsonBusqueda= {_id:teamId};
-
-    //formamos el json con el cual realizar la búsqueda.
-    let proyection= "name";
-
-    //obtenemos el listado de equipos por busqueda, en este caso solo saldra uno.
-    let listTeams = Team.findOne(jsonBusqueda, proyection).exec();
 
     return listTeams;
 };
