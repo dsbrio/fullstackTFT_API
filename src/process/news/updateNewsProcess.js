@@ -18,7 +18,8 @@ process.on('message', (data) => {
         cloudinary.v2.uploader.upload("data:image/png;base64,"+ data.photo, 
         function(error, result) {
             if(error){
-                console.log('noticia no actualizada correctamente: fallo al subir foto a la nube');   
+                console.log('noticia no actualizada correctamente: fallo al subir foto a la nube');  
+                console.log(error); 
                 data.photo = "";
                 update(data);
             }else{

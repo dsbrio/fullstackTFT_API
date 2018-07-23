@@ -17,13 +17,13 @@ cloudinary.config({
 
 const NewsSchema = mongoose.Schema({
     id: String,
-    title: String,
-    photo: String,
-    subtitle: String,
-    reporter: String,
-    date: Date,
-    text: String,
-    link: String
+    title: {type:String, default:""},
+    photo: {type:String, default:""},
+    subtitle: {type:String, default:""},
+    reporter: {type:String, default:""},
+    date: {type:Date, default:new Date()},
+    text: {type:String, default:""},
+    link: {type:String, default:""}
 });
 
 

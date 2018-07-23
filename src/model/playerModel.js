@@ -11,24 +11,24 @@ var Schema = mongoose.Schema;
 
 const PlayerSchema = mongoose.Schema({
     id: String,
-    name: String,
-    secondname: String,
+    name: {type:String, default:""},
+    secondname: {type:String, default:""},
     characteristics: {
-        age: Number,
-        weight: Number,
-        height: Number
+        age: {type:Number, default:0},
+        weight: {type:Number, default:0},
+        height: {type:Number, default:0}
     },
-    nationality: String,
-    position: String,
-    team: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
-    photo: String,
+    nationality: {type:String, default:""},
+    position: {type:String, default:""},
+    team: { type: Schema.Types.ObjectId, ref: 'Team', default: null },
+    photo: {type:String, default:""},
     statistics:{
-        goals: Number,
-        titles: Number
+        goals: {type:Number, default:0},
+        titles: {type:Number, default:0}
     },
-    strengths:String,
-    weaknesses:String,
-    comments: String
+    strengths:{type:String, default:""},
+    weaknesses:{type:String, default:""},
+    comments: {type:String, default:""}
 });
 
 

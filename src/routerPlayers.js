@@ -13,9 +13,15 @@ const {getPlayerById, getAllPlayers,getAllPlayersByTeamId, deleteAll} = require(
 
 const routerPlayers = express.Router();
 
+var  multer   = require ('multer') 
+var  upload  = multer () 
+
 
 //creación del jugador con proceso hijo.
-routerPlayers.post('/',(req,res)=>{
+routerPlayers.post('/', upload.single('photo'), (req,res)=>{
+
+    console.log('req.file', req.file);
+    console.log('req.body', req.body);
 
     validarToken(req.headers['authorization'], function(tokenValido){
 
@@ -25,6 +31,10 @@ routerPlayers.post('/',(req,res)=>{
 
             let data = req.body;
             data.id = req.params.id;
+
+            if(req.file != undefined){
+                data.photo = new Buffer(req.file.buffer, 'binary').toString('base64');
+            }
 
             //realizamos llamada al proceso hijo.
             const addPlayerProcess = fork(addPlayerProcessUrl);
@@ -107,14 +117,21 @@ routerPlayers.get('/:id',(req,res)=>{
 
 
 //edición del jugador con proceso hijo.
-routerPlayers.patch('/:id',(req,res)=>{
+routerPlayers.patch('/:id', upload.single('photo'), (req,res)=>{
 
+    console.log('req.file', req.file);
+    console.log('req.body', req.body);
+    
     validarToken(req.headers['authorization'], function(tokenValido){
 
         if(tokenValido){
 
             let data = req.body;
             data.id = req.params.id;
+
+            if(req.file != undefined){
+                data.photo = new Buffer(req.file.buffer, 'binary').toString('base64');
+            }
 
             //realizamos llamada al proceso hijo.
             const updatePlayerProcess = fork(updatePlayerProcessUrl);
