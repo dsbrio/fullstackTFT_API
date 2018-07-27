@@ -41,6 +41,22 @@ process.on('message', (data) => {
 
 function update(data){
 
+    if(data['characteristics.age'] != undefined && isNaN(data['characteristics.age'])){
+        data['characteristics.age'] = 0;
+    }
+    if(data['characteristics.weight'] != undefined && isNaN(data['characteristics.weight'])){
+        data['characteristics.weight'] = 0;
+    }
+    if(data['characteristics.height'] != undefined && isNaN(data['characteristics.height'])){
+        data['characteristics.height'] = 0;
+    }
+    if(data['statistics.goals'] != undefined && isNaN(data['statistics.goals'])){
+        data['statistics.goals'] = 0;
+    }
+    if(data['statistics.titles'] != undefined && isNaN(data['statistics.titles'])){
+        data['statistics.titles'] = 0;
+    }
+
     updatePlayer(data).then((responseBBDD) => {
         console.log('Jugador actualizado correctamente.');
         
