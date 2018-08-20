@@ -8,7 +8,6 @@ mongoose.connect('mongodb://tft:tft@ds016118.mlab.com:16118/tft');
 mongoose.Promise = global.Promise;
 
 var cloudinary = require('cloudinary');
-var moment = require('moment');
 
 cloudinary.config({ 
     cloud_name: 'tftfullstack', 
@@ -33,12 +32,8 @@ const News = mongoose.model('News', NewsSchema);
 //Inserta el modelo en base de datos
 exports.saveNews = (data) =>{
     
-    var dateMoment = moment(data.date, "DD-MM-YYYY");
-
-    if(!dateMoment.isValid()){
+    if(data.date == null || isNaN(Date.parse(data.date))){
         data.date = new Date();
-    }else{
-        data.date = dateMoment.toDate();
     }
     
     return (new News(data)).save();
@@ -74,11 +69,6 @@ exports.getNewsAfterDate = (dateFrom)=>{
 
 //Actualiza el modelo en base de datos
 exports.updateNews = (data) =>{
-
-    var dateMoment = moment(data.date, "DD-MM-YYYY");
-    if(dateMoment.isValid()){
-        data.date = dateMoment.toDate();
-    }
 
     let jsonBusqueda= {_id:data.id};
 
