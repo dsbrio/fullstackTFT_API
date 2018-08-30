@@ -9,7 +9,7 @@ const updatePlayerProcessUrl = 'src/process/player/updatePlayerProcess.js';
 const {validarToken} = require('./utileria/login.js');
 
 //importamos solo las funciones del modelo que vamos a usar desde el router.
-const {getPlayerById, getAllPlayers,getAllPlayersByTeamId, deleteAll} = require('./model/playerModel.js');
+const {getAllPlayers,getAllPlayersByTeamId, deleteAll} = require('./model/playerModel.js');
 
 const routerPlayers = express.Router();
 
@@ -84,37 +84,6 @@ routerPlayers.get('/',(req,res)=>{
     });  
     
 });
-
-
-//obtención del jugador sin proceso hijo.
-routerPlayers.get('/:id',(req,res)=>{
-
-    let data = {
-        id:req.params.id
-    };
-    
-    getPlayerById(data.id).then((data)=>{
-
-        var playerInfo={};
-
-        if(null!=data && data.length==1){
-            playerInfo=data[0];
-        }
-
-        var response = {
-            success:true,
-            data:playerInfo
-        };
-        res.status(200).json(response);
-        
-    }).catch((err) => {
-        console.log('Error obteniendo jugador');
-        console.log(err);
-        res.status(500).json({success:false});
-    });  
-    
-});
-
 
 //edición del jugador con proceso hijo.
 routerPlayers.patch('/:id', upload.single('photo'), (req,res)=>{
