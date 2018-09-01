@@ -42,10 +42,7 @@ exports.savePlayer = (data) =>{
 //obtienen el listado de todos los jugadores de la BD.
 exports.getAllPlayers = ()=>{
 
-    //proyección para no obtener todos los atributos
-    let proyection = "id name secondname characteristics.age characteristics.weight characteristics.height nationality position team photo"
-
-    let listPlayers = Player.find({}, proyection).populate('team', 'name').exec();
+    let listPlayers = Player.find({}).populate('team', 'name').exec();
 
     return listPlayers;
 };
