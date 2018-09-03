@@ -23,7 +23,6 @@ process.on('message', (data) => {
                 console.log('jugador : fallo al subir foto a la nube', error);   
                 
                 data.photo ="";
-
                 savePlayerData(data);
             }else{
                 console.log("foto del jugador subido a la nube");
@@ -45,6 +44,22 @@ process.on('message', (data) => {
 
 function savePlayerData(data) {
 
+    if(data['characteristics.age'] != undefined && isNaN(data['characteristics.age'])){
+        data['characteristics.age'] = 0;
+    }
+    if(data['characteristics.weight'] != undefined && isNaN(data['characteristics.weight'])){
+        data['characteristics.weight'] = 0;
+    }
+    if(data['characteristics.height'] != undefined && isNaN(data['characteristics.height'])){
+        data['characteristics.height'] = 0;
+    }
+    if(data['statistics.goals'] != undefined && isNaN(data['statistics.goals'])){
+        data['statistics.goals'] = 0;
+    }
+    if(data['statistics.titles'] != undefined && isNaN(data['statistics.titles'])){
+        data['statistics.titles'] = 0;
+    }
+    
     savePlayer(data).then((responseBBDD) => {
            
         //Componemos el objeto de transferencia

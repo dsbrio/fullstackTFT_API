@@ -37,6 +37,14 @@ process.on('message', (data) => {
 });
 
 function saveTeamData(data) {
+
+    if(data['history.goals'] != undefined && isNaN(data['history.goals'])){
+        data['history.goals'] = 0;
+    }
+    if(data['history.titles'] != undefined && isNaN(data['history.titles'])){
+        data['history.titles'] = 0;
+    }
+
     saveTeam(data).then((responseBBDD) => {
         console.log('equipo creado correctamente.');
         process.send(responseBBDD);

@@ -37,6 +37,13 @@ process.on('message', (data) => {
 
 function update(data){
 
+    if(data['history.goals'] != undefined && isNaN(data['history.goals'])){
+        data['history.goals'] = 0;
+    }
+    if(data['history.titles'] != undefined && isNaN(data['history.titles'])){
+        data['history.titles'] = 0;
+    }
+
     updateTeam(data).then((responseBBDD) => {
         console.log('Equipo actualizado correctamente.');
         process.send(data);
