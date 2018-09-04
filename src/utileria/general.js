@@ -23,12 +23,18 @@ exports.getDateTime = () => {
 
 exports.decrypt = (encryptedPass, callback) => {
 
+    console.log('encryptedPass: ',encryptedPass);
+
     //obtenemos la clave privada
     var rutaAbsolutaClavePrivada = path.resolve("./src/utileria/clavePrivada.key");
+
+    console.log('rutaAbsolutaClavePrivada: ',rutaAbsolutaClavePrivada);
 
     //tenemos la clave en base64
     var clavePrivadaBase64 = fs.readFileSync(rutaAbsolutaClavePrivada, "utf8");
    
+    console.log('clavePrivadaBase64: ',clavePrivadaBase64);
+
     //pasamos a byte la pass que nos llega
     var bufferUsesPass = new Buffer(encryptedPass, "base64");
 
