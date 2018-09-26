@@ -2,6 +2,7 @@
 const express = require('express');
 
 const {login, generaToken, validarToken,logout} = require('./utileria/login.js');
+const {decrypt} = require('./utileria/general.js');
 
 const router = express.Router();
 
@@ -10,32 +11,41 @@ router.post('/login', (req, res) => {
 
     //obtenemos los parametros de la petición
     var username = req.body.username;
-    var password = req.body.password;
 
-    login(username, password, function(loginOk, userInfo){
+    decrypt(req.body.password, function(password){
+
+        console.log('password:', password);
+
+        login(username, password, function(loginOk, userInfo){
 		
-        if(loginOk){
-           
-            //llamamos a la funcion de generar token
-            generaToken(userInfo, function(token){
-
-                //respondemos con el token generado y datos de usuario.
-                var data = {
-                    "success":true,
-                    "user" : userInfo, 
-                    "token" : token
-                }
-                res.status(201).json(data);
-            });
-
-        }else{
+            if(loginOk){
+               
+                //llamamos a la funcion de generar token
+                generaToken(userInfo, function(token){
     
-            res.status(401).send({
-                success:false,
-                error: 'usuario o contraseña inválidos'
-            })
-        }		
-	});
+                    //respondemos con el token generado y datos de usuario.
+                    var data = {
+                        "success":true,
+                        "user" : userInfo, 
+                        "token" : token
+                    }
+                    res.status(201).json(data);
+                });
+    
+            }else{
+        
+                res.status(401).send({
+                    success:false,
+                    error: 'usuario o contraseña inválidos'
+                })
+            }		
+        });
+
+    });
+
+   
+
+    
 });
 
 //Realizamos un borrado del token para el usuario que lo contiene.
